@@ -1,5 +1,5 @@
 [package]
-name = "heliosphere-path-mapper"
+name = "heliosphere-affects-calculator"
 version = "2.0.0"
 edition = "2024"
 
