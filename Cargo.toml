@@ -1,21 +1,6 @@
-[package]
-name = "heliosphere-affects-calculator"
-version = "2.0.0"
-edition = "2024"
-
-[dependencies]
-anyhow = "1"
-binrw = "0.14.1"
-clap = { version = "4", features = ["derive"] }
-ironworks = { git = "https://github.com/ackwell/ironworks", rev = "be80e8433ccc58bcbf19aa9173b6331c1d4ea09e", features = ["excel", "sestring", "sqpack"] }
-ironworks_sheets = {git = "https://github.com/ackwell/ironworks", rev = "112a1e55f5570df61ea7f2834f8f54fa5d63b5d9"}
-itoa = "1"
-nom = "8"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-serde_repr = "0"
-thiserror = "2"
-ureq = { version = "3", features = ["json"] }
-
-[dev-dependencies]
-nom-language = "0.1"
+[workspace]
+resolver = "3"
+members = [
+    "path-parser",
+    "affects-calculator", "affects-database-generator",
+]

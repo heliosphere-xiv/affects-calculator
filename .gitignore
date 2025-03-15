@@ -1,3 +1,6 @@
 /target
 /affects.json
 /affects.json.zst
+/bnpcs.json
+/CurrentPathList
+/*.py
