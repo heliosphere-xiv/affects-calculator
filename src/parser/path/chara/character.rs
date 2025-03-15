@@ -13,6 +13,7 @@ use crate::parser::{
     EquipSlot, GamePath, IResult, equip_slot,
     model_info::{ModelInfo, model_info, model_info_with_raw},
     n_digit_id, path_id, simple_part_enum,
+    skeleton_slot::{SkeletonSlot, skeleton_slot},
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -21,7 +22,7 @@ pub enum CharacterPath<'a> {
         primary_id: u16,
         model_info: ModelInfo,
         body_type: BodyType,
-        slot: BodyTypeSlot,
+        slot: Option<BodyTypeSlot>,
     },
     Mtrl {
         primary_id: u16,
@@ -46,7 +47,7 @@ pub enum CharacterPath<'a> {
     Skeleton {
         primary_id: u16,
         model_info: ModelInfo,
-        slot: EquipSlot,
+        slot: SkeletonSlot,
     },
     Tmb(&'a str),
     Pap(&'a str),
@@ -179,10 +180,9 @@ fn mdl_path(
         map(
             delimited(
                 tag("model/"),
-                separated_pair(
+                (
                     file_repeat(primary_id, model_info.0, body_type),
-                    tag("_"),
-                    body_type_slot,
+                    opt(preceded(tag("_"), body_type_slot)),
                 ),
                 tag(".mdl"),
             ),
@@ -308,20 +308,26 @@ fn decal_path(input: &str) -> IResult<&str, CharacterPath> {
 fn skeleton_path(input: &str) -> IResult<&str, CharacterPath> {
     let (left, (model_info, slot)) = (
         delimited(tag("human/c"), model_info_with_raw, tag("/")),
-        delimited(tag("skeleton/"), equip_slot, tag("/")),
+        delimited(tag("skeleton/"), skeleton_slot, tag("/")),
     )
         .parse(input)?;
     let (left, primary_id) = terminated(path_id(slot.abbreviation()), tag("/")).parse(left)?;
 
     map(
         delimited(
-            alt((tag("eid_"), tag("skl_"), tag("phy_"))),
+            alt((tag("eid_"), tag("skl_"), tag("phy_"), tag("kdi_"))),
             (
                 tag(&*format!("c{:<04}", model_info.0)),
                 tag(slot.abbreviation()),
                 tag(&*format!("{primary_id:<04}")),
             ),
-            alt((tag(".eid"), tag(".sklb"), tag(".phyb"), tag(".skp"))),
+            alt((
+                tag(".eid"),
+                tag(".sklb"),
+                tag(".phyb"),
+                tag(".skp"),
+                tag(".kdb"),
+            )),
         ),
         |_repeat| CharacterPath::Skeleton {
             primary_id,
@@ -346,12 +352,22 @@ fn tmb_path(input: &str) -> IResult<&str, CharacterPath> {
 
 fn pap_path(input: &str) -> IResult<&str, CharacterPath> {
     map(
-        delimited(
-            tag("human/c0101/animation/a0001/"),
-            take_until(".pap"),
-            tag(".pap"),
+        (
+            delimited(tag("human/"), path_id("c"), tag("/")),
+            delimited(tag("animation/"), path_id("a"), tag("/")),
+            delimited(
+                opt((tag("bt_"), take_till(|c| c == '/'), tag("/"))),
+                take_until(".pap"),
+                tag(".pap"),
+            ),
         ),
-        CharacterPath::Pap,
+        // old way
+        // delimited(
+        //     tag("human/c0101/animation/a0001/"),
+        //     take_until(".pap"),
+        //     tag(".pap"),
+        // ),
+        |(_model_id, _primary_id, anim_key)| CharacterPath::Pap(anim_key),
     )
     .parse(input)
 }
@@ -376,6 +392,7 @@ mod test {
             character::{BodyType, BodyTypeSlot, DecalType},
         },
         race_gender::{Gender, Race},
+        skeleton_slot::SkeletonSlot,
         test::test_path,
     };
 
@@ -389,10 +406,27 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Viera),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Hair,
-                slot: BodyTypeSlot::Hair,
+                slot: Some(BodyTypeSlot::Hair),
+            }),
+        );
+    }
+
+    fn mdl_2() {
+        const PATH: &str = "chara/human/c1001/obj/hair/h0102/model/c1001h0102.mdl";
+        test_path(
+            PATH,
+            GamePath::Character(CharacterPath::Mdl {
+                primary_id: 173,
+                model_info: ModelInfo {
+                    race: Some(Race::Roegadyn),
+                    gender: Gender::Female,
+                    kind: ModelKind::Adult,
+                },
+                body_type: BodyType::Hair,
+                slot: None,
             }),
         );
     }
@@ -409,7 +443,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Viera),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Ear,
                 slot: None,
@@ -429,7 +463,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Elezen),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Face,
                 slot: Some(BodyTypeSlot::Etc),
@@ -450,7 +484,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Highlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Hair,
                 slot: Some(BodyTypeSlot::Accessory),
@@ -470,7 +504,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Hair,
                 slot: Some(BodyTypeSlot::Hair),
@@ -490,7 +524,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Viera),
                     gender: Gender::Female,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Hair,
                 slot: Some(BodyTypeSlot::Hair),
@@ -510,7 +544,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Hrothgar),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 body_type: BodyType::Body,
                 slot: None,
@@ -575,9 +609,9 @@ mod test {
                     model_info: ModelInfo {
                         race: Some(Race::Hrothgar),
                         gender: Gender::Female,
-                        kind: ModelKind::Player,
+                        kind: ModelKind::Adult,
                     },
-                    slot: EquipSlot::Head,
+                    slot: SkeletonSlot::Head,
                 }),
             );
         }
@@ -600,7 +634,7 @@ mod test {
 
         test_path(
             PATH,
-            GamePath::Character(CharacterPath::Pap("bt_common/ability/cnj_white/abl025")),
+            GamePath::Character(CharacterPath::Pap("ability/cnj_white/abl025")),
         );
     }
 
@@ -613,7 +647,7 @@ mod test {
             GamePath::Character(CharacterPath::Atch(ModelInfo {
                 race: Some(Race::Elezen),
                 gender: Gender::Male,
-                kind: ModelKind::Player,
+                kind: ModelKind::Adult,
             })),
         );
     }

@@ -14,26 +14,26 @@ use crate::parser::{
 #[derive(Debug, PartialEq, Eq)]
 pub enum EquipmentPath {
     Imc(u16),
-    Material {
-        model_id: u16,
+    Mtrl {
+        primary_id: u16,
         variant_id: u16,
         model_info: ModelInfo,
         slot: EquipSlot,
     },
-    Model {
+    Mdl {
         id: u16,
         info: ModelInfo,
         slot: EquipSlot,
     },
-    Texture {
-        model_id: u16,
+    Tex {
+        primary_id: u16,
         variant_id: u8,
         model_info: ModelInfo,
         slot: EquipSlot,
     },
     Avfx {
-        model_id: u16,
-        variant_id: u16,
+        primary_id: u16,
+        effect_id: u16,
     },
 }
 
@@ -47,15 +47,15 @@ fn file_repeat(input: &str) -> IResult<&str, (ModelInfo, u16)> {
 
 pub(crate) fn chara_equipment_path(input: &str) -> IResult<&str, GamePath> {
     // equipment/e0863/material/v0006/mt_c0101e0863_sho_a.mtrl
-    let (left, model_id) = delimited(tag("equipment/"), path_id("e"), tag("/")).parse(input)?;
+    let (left, primary_id) = delimited(tag("equipment/"), path_id("e"), tag("/")).parse(input)?;
 
     map(
         alt((
-            imc_path(model_id),
-            mtrl_path(model_id),
-            mdl_path(model_id),
-            tex_path(model_id),
-            avfx_path(model_id),
+            imc_path(primary_id),
+            mtrl_path(primary_id),
+            mdl_path(primary_id),
+            tex_path(primary_id),
+            avfx_path(primary_id),
         )),
         GamePath::Equipment,
     )
@@ -64,11 +64,11 @@ pub(crate) fn chara_equipment_path(input: &str) -> IResult<&str, GamePath> {
 
 // chara/equipment imc
 
-fn imc_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
+fn imc_path(primary_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
     move |input: &str| {
         map_res(terminated(path_id("e"), tag(".imc")), |repeat_id| {
-            check_repeat_id(model_id, repeat_id)?;
-            anyhow::Ok(EquipmentPath::Imc(model_id))
+            check_repeat_id(primary_id, repeat_id)?;
+            anyhow::Ok(EquipmentPath::Imc(primary_id))
         })
         .parse(input)
     }
@@ -76,7 +76,7 @@ fn imc_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
 
 // chara/equipment/model
 
-fn mdl_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
+fn mdl_path(primary_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
     move |input: &str| {
         map_res(
             (
@@ -84,9 +84,9 @@ fn mdl_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
                 terminated(equip_slot, tag(".mdl")),
             ),
             |((info, repeat_id), slot)| {
-                check_repeat_id(model_id, repeat_id)?;
-                anyhow::Ok(EquipmentPath::Model {
-                    id: model_id,
+                check_repeat_id(primary_id, repeat_id)?;
+                anyhow::Ok(EquipmentPath::Mdl {
+                    id: primary_id,
                     info,
                     slot,
                 })
@@ -98,14 +98,14 @@ fn mdl_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
 
 // chara/equipment/material
 
-fn mtrl_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
+fn mtrl_path(primary_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
     move |input: &str| {
         map_res(
             (terminated(mtrl_variant, tag("/")), mtrl_simple_file_name),
             |(variant_id, (info, e_id, slot))| {
-                check_repeat_id(model_id, e_id)?;
-                anyhow::Ok(EquipmentPath::Material {
-                    model_id,
+                check_repeat_id(primary_id, e_id)?;
+                anyhow::Ok(EquipmentPath::Mtrl {
+                    primary_id,
                     variant_id,
                     model_info: info,
                     slot,
@@ -137,7 +137,7 @@ fn mtrl_simple_file_name(input: &str) -> IResult<&str, (ModelInfo, u16, EquipSlo
 
 // chara/equipment/texture
 
-fn tex_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
+fn tex_path(primary_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
     move |input: &str| {
         map_res(
             (
@@ -146,9 +146,9 @@ fn tex_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
                 terminated(terminated(equip_slot, take_till(|c| c == '.')), tag(".tex")),
             ),
             |(variant_id, (info, repeat_id), slot)| {
-                check_repeat_id(model_id, repeat_id)?;
-                anyhow::Ok(EquipmentPath::Texture {
-                    model_id,
+                check_repeat_id(primary_id, repeat_id)?;
+                anyhow::Ok(EquipmentPath::Tex {
+                    primary_id,
                     variant_id,
                     model_info: info,
                     slot,
@@ -161,13 +161,13 @@ fn tex_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
 
 // chara/equipment/vfx
 
-fn avfx_path(model_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
+fn avfx_path(primary_id: u16) -> impl Fn(&str) -> IResult<&str, EquipmentPath> {
     move |input: &str| {
         map(
             terminated(path_id("vfx/eff/ve"), tag(".avfx")),
             |variant_id| EquipmentPath::Avfx {
-                model_id,
-                variant_id,
+                primary_id,
+                effect_id: variant_id,
             },
         )
         .parse(input)
@@ -189,13 +189,13 @@ mod test {
         const PATH: &str = "chara/equipment/e0863/material/v0006/mt_c0101e0863_sho_a.mtrl";
         test_path(
             PATH,
-            GamePath::Equipment(EquipmentPath::Material {
-                model_id: 863,
+            GamePath::Equipment(EquipmentPath::Mtrl {
+                primary_id: 863,
                 variant_id: 6,
                 model_info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 slot: EquipSlot::Feet,
             }),
@@ -213,12 +213,12 @@ mod test {
         const PATH: &str = "chara/equipment/e0864/model/c0101e0864_met.mdl";
         test_path(
             PATH,
-            GamePath::Equipment(EquipmentPath::Model {
+            GamePath::Equipment(EquipmentPath::Mdl {
                 id: 864,
                 info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 slot: EquipSlot::Head,
             }),
@@ -230,13 +230,13 @@ mod test {
         const PATH: &str = "chara/equipment/e0862/texture/v01_c0101e0862_top_mask.tex";
         test_path(
             PATH,
-            GamePath::Equipment(EquipmentPath::Texture {
-                model_id: 862,
+            GamePath::Equipment(EquipmentPath::Tex {
+                primary_id: 862,
                 variant_id: 1,
                 model_info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 slot: EquipSlot::Body,
             }),
@@ -249,8 +249,8 @@ mod test {
         test_path(
             PATH,
             GamePath::Equipment(EquipmentPath::Avfx {
-                model_id: 9173,
-                variant_id: 6,
+                primary_id: 9173,
+                effect_id: 6,
             }),
         );
     }

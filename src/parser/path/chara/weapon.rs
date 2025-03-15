@@ -32,6 +32,11 @@ pub enum WeaponPath {
         primary_id: u16,
         secondary_id: u16,
     },
+    Avfx {
+        primary_id: u16,
+        secondary_id: u16,
+        effect_id: u16,
+    },
 }
 
 // util
@@ -59,6 +64,7 @@ fn chara_weapon_path_simple(input: &str) -> IResult<&str, GamePath> {
             mdl_path(primary_id, secondary_id),
             mtrl_path(primary_id, secondary_id),
             tex_path(primary_id, secondary_id),
+            avfx_path(primary_id, secondary_id),
         )),
         GamePath::Weapon,
     )
@@ -181,9 +187,31 @@ fn chara_weapon_path_skeleton(input: &str) -> IResult<&str, GamePath> {
     .parse(input)
 }
 
+// chara/weapon/.../vfx
+
+fn avfx_path(primary_id: u16, secondary_id: u16) -> impl Fn(&str) -> IResult<&str, WeaponPath> {
+    move |input: &str| {
+        map(
+            delimited(tag("vfx/eff/"), path_id("vw"), tag(".avfx")),
+            |effect_id| WeaponPath::Avfx {
+                primary_id,
+                secondary_id,
+                effect_id,
+            },
+        )
+        .parse(input)
+    }
+}
+
+// chara/weapon/w0520/obj/body/b0001/vfx/eff/vw0002.avfx
+
 #[cfg(test)]
 mod test {
-    use crate::parser::{GamePath, path::chara::WeaponPath, test::test_path};
+    use crate::parser::{
+        GamePath,
+        path::chara::{AccessoryPath, WeaponPath},
+        test::test_path,
+    };
 
     #[test]
     fn imc() {
@@ -259,5 +287,18 @@ mod test {
                 }),
             );
         }
+    }
+
+    #[test]
+    fn avfx() {
+        const PATH: &str = "chara/weapon/w0520/obj/body/b0001/vfx/eff/vw0002.avfx";
+        test_path(
+            PATH,
+            GamePath::Weapon(WeaponPath::Avfx {
+                primary_id: 520,
+                secondary_id: 1,
+                effect_id: 2,
+            }),
+        );
     }
 }

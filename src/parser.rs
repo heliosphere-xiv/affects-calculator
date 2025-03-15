@@ -1,7 +1,8 @@
 mod file_or_part;
-mod model_info;
-mod path;
-mod race_gender;
+pub mod model_info;
+pub mod path;
+pub mod race_gender;
+pub mod skeleton_slot;
 #[cfg(test)]
 mod test;
 
@@ -15,12 +16,17 @@ use nom::{
     combinator::map_res,
     sequence::preceded,
 };
+use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::parser::{
-    model_info::ModelInfo,
-    path::chara::{
-        AccessoryPath, CharacterPath, DemihumanPath, EquipmentPath, MonsterPath, WeaponPath,
+use crate::{
+    parser::{
+        model_info::ModelInfo,
+        path::chara::{
+            AccessoryPath, CharacterPath, DemihumanPath, EquipmentPath, MonsterPath, WeaponPath,
+        },
     },
+    schema::EquipSlotCategory,
 };
 
 #[cfg(test)]
@@ -31,11 +37,12 @@ type IResult<I, O, E = nom::error::Error<I>> = nom::IResult<I, O, E>;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum GamePath<'a> {
-    FontTexture(&'a str),
-    FontFile {
-        family: &'a str,
-        size: u8,
-    },
+    Monster(MonsterPath),
+    Weapon(WeaponPath),
+    Demihuman(DemihumanPath),
+    Equipment(EquipmentPath),
+    Accessory(AccessoryPath),
+    Character(CharacterPath<'a>),
     Icon {
         group: u64,
         primary_id: u64,
@@ -49,12 +56,11 @@ pub enum GamePath<'a> {
         suffix: Option<char>,
         extra: Option<char>,
     },
-    Equipment(EquipmentPath),
-    Monster(MonsterPath),
-    Weapon(WeaponPath),
-    Demihuman(DemihumanPath),
-    Accessory(AccessoryPath),
-    Character(CharacterPath<'a>),
+    FontTexture(&'a str),
+    FontFile {
+        family: &'a str,
+        size: u8,
+    },
 }
 
 impl<'a> GamePath<'a> {
@@ -311,6 +317,8 @@ enum_str! {
         Ws => "ws",
     }
 
+    #[derive(Serialize_repr, Deserialize_repr, Hash, PartialOrd, Ord)]
+    #[repr(u8)]
     pub enum EquipSlot {
         Head => "met",
         Hands => "glv",
@@ -332,7 +340,101 @@ enum_str! {
     }
 }
 
+impl<'a> TryFrom<&'a EquipSlotCategory> for EquipSlot {
+    type Error = ();
+
+    fn try_from(value: &'a EquipSlotCategory) -> Result<Self, Self::Error> {
+        if value.head == 1 {
+            return Ok(Self::Head);
+        }
+
+        if value.gloves == 1 {
+            return Ok(Self::Hands);
+        }
+
+        if value.legs == 1 {
+            return Ok(Self::Legs);
+        }
+
+        if value.feet == 1 {
+            return Ok(Self::Feet);
+        }
+
+        if value.body == 1 {
+            return Ok(Self::Body);
+        }
+
+        if value.ears == 1 {
+            return Ok(Self::Ears);
+        }
+
+        if value.neck == 1 {
+            return Ok(Self::Neck);
+        }
+
+        if value.finger_r == 1 {
+            return Ok(Self::RFinger);
+        }
+
+        if value.finger_l == 1 {
+            return Ok(Self::LFinger);
+        }
+
+        if value.wrists == 1 {
+            return Ok(Self::Wrists);
+        }
+
+        Err(())
+    }
+}
+
 impl EquipSlot {
+    pub fn to_id(self) -> u64 {
+        match self {
+            Self::Head => 3,
+            Self::Hands => 5,
+            Self::Legs => 7,
+            Self::Feet => 8,
+            Self::Body => 4,
+            Self::Ears => 9,
+            Self::Neck => 10,
+            Self::RFinger => 12,
+            Self::LFinger => 14,
+            Self::Wrists => 11,
+        }
+    }
+
+    pub fn to_imc_part_idx(self) -> Option<usize> {
+        let idx = match self {
+            Self::Head => 0,
+            Self::Body => 1,
+            Self::Hands => 2,
+            Self::Legs => 3,
+            Self::Feet => 4,
+
+            Self::Ears => 0,
+            Self::Neck => 1,
+            Self::Wrists => 2,
+            Self::RFinger => 3,
+            Self::LFinger => 4,
+
+            _ => return None,
+        };
+
+        Some(idx)
+    }
+
+    pub fn is_accessory(self) -> bool {
+        match self {
+            Self::Ears => true,
+            Self::Neck => true,
+            Self::Wrists => true,
+            Self::RFinger => true,
+            Self::LFinger => true,
+            _ => false,
+        }
+    }
+
     pub fn abbreviation(&self) -> &str {
         match self {
             Self::Head => "m",

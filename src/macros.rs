@@ -1,6 +1,7 @@
 macro_rules! enum_str {
-    {$(pub enum $name: ident { $($variant: ident => $str: expr),+ $(,)? })+} => {
+    {$($(#[$meta: meta])* pub enum $name: ident { $($variant: ident => $str: expr),+ $(,)? })+} => {
         $(
+            $(#[$meta])*
             #[derive(Debug, PartialEq, Eq, Copy, Clone)]
             pub enum $name {
                 $(

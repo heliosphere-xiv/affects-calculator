@@ -7,4 +7,8 @@ use clap::Parser;
 pub struct CliArguments {
     #[arg(short, long)]
     pub game_path: PathBuf,
+    #[arg(short, long)]
+    pub bnpc_path: String,
+    #[arg(short, long, default_value_t = false)]
+    pub pretty: bool,
 }

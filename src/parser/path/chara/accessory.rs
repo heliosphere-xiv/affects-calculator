@@ -175,9 +175,26 @@ mod test {
                 info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 slot: EquipSlot::Ears,
+            }),
+        );
+    }
+
+    #[test]
+    fn mdl_2() {
+        const PATH: &str = "chara/accessory/a0155/model/c0101a0155_ril.mdl";
+        test_path(
+            PATH,
+            GamePath::Accessory(AccessoryPath::Mdl {
+                primary_id: 155,
+                info: ModelInfo {
+                    race: Some(Race::Midlander),
+                    gender: Gender::Male,
+                    kind: ModelKind::Adult,
+                },
+                slot: EquipSlot::LFinger,
             }),
         );
     }
@@ -192,7 +209,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 variant_id: 1,
                 slot: EquipSlot::Ears,
@@ -211,7 +228,7 @@ mod test {
                 model_info: ModelInfo {
                     race: Some(Race::Midlander),
                     gender: Gender::Male,
-                    kind: ModelKind::Player,
+                    kind: ModelKind::Adult,
                 },
                 variant_id: 2,
                 slot: EquipSlot::Wrists,

@@ -37,6 +37,11 @@ pub enum DemihumanPath {
         primary_id: u16,
         secondary_id: u16,
     },
+    Avfx {
+        primary_id: u16,
+        secondary_id: u16,
+        effect_id: u16,
+    },
 }
 
 // util
@@ -64,6 +69,7 @@ fn chara_demihuman_path_simple(input: &str) -> IResult<&str, GamePath> {
             mtrl_path(primary_id, secondary_id),
             mdl_path(primary_id, secondary_id),
             tex_path(primary_id, secondary_id),
+            avfx_path(primary_id, secondary_id),
         )),
         GamePath::Demihuman,
     )
@@ -192,6 +198,22 @@ fn chara_demihuman_path_skeleton(input: &str) -> IResult<&str, GamePath> {
     .parse(input)
 }
 
+// chara/demihuman/.../vfx
+
+fn avfx_path(primary_id: u16, secondary_id: u16) -> impl Fn(&str) -> IResult<&str, DemihumanPath> {
+    move |input: &str| {
+        map(
+            delimited(tag("vfx/eff/"), path_id("ve"), tag(".avfx")),
+            |effect_id| DemihumanPath::Avfx {
+                primary_id,
+                secondary_id,
+                effect_id,
+            },
+        )
+        .parse(input)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::parser::{EquipSlot, GamePath, path::chara::DemihumanPath, test::test_path};
@@ -274,5 +296,18 @@ mod test {
                 }),
             );
         }
+    }
+
+    #[test]
+    fn avfx() {
+        const PATH: &str = "chara/demihuman/d1038/obj/equipment/e0001/vfx/eff/ve0002.avfx";
+        test_path(
+            PATH,
+            GamePath::Demihuman(DemihumanPath::Avfx {
+                primary_id: 1038,
+                secondary_id: 1,
+                effect_id: 2,
+            }),
+        );
     }
 }

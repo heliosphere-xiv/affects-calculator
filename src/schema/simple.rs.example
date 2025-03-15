@@ -1,0 +1,25 @@
+use ironworks::sestring::SeString;
+
+use crate::schema::MetadataExtractor;
+
+#[derive(Debug)]
+pub struct ModelChara {
+    pub model: u16,
+}
+
+impl MetadataExtractor for ModelChara {
+    type Error = super::Error;
+
+    fn name() -> String {
+        "ModelChara".into()
+    }
+
+    fn populate_row(row: ironworks::excel::Row) -> Result<Self, Self::Error> {
+        let item = crate::populate!(
+            row,
+            [model, 1, into_u16],
+        );
+
+        Ok(item)
+    }
+}
