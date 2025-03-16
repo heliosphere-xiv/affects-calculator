@@ -13,6 +13,21 @@ use path_parser::{
 
 pub trait CalculatesAffects {
     fn calculate_affected(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<Cow<str>>>;
+
+    fn calculate_affected_cloned(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<String>> {
+        self.calculate_affected(path)
+            .into_iter()
+            .map(|(kind, names)| {
+                (
+                    kind,
+                    names
+                        .into_iter()
+                        .map(|name| name.into_owned())
+                        .collect::<BTreeSet<_>>(),
+                )
+            })
+            .collect()
+    }
 }
 
 impl CalculatesAffects for Affects {
