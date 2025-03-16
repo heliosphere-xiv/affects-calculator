@@ -1,7 +1,9 @@
-use affects_calculator::formats::imc::{ImcFile, RawImcFile};
-use path_parser::types::EquipSlot;
+use affects_common::EquipSlot;
 
-use crate::analysers::GeneratorContext;
+use crate::{
+    analysers::GeneratorContext,
+    formats::imc::{ImcFile, RawImcFile},
+};
 
 pub fn analyse_equipment_imcs(ctx: &mut GeneratorContext) {
     for primaries in ctx.affects.equipment.values() {
@@ -12,7 +14,7 @@ pub fn analyse_equipment_imcs(ctx: &mut GeneratorContext) {
                     "chara/equipment/e{primary_id:<04}/e{primary_id:<04}.imc"
                 ))
                 .ok()
-                .and_then(|file| ImcFile::try_from_raw(file).ok())
+                .and_then(ImcFile::try_from_raw)
             {
                 Some(imc) => imc,
                 None => {

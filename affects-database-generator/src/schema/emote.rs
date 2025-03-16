@@ -1,3 +1,4 @@
+use anyhow::Context;
 use ironworks::sestring::SeString;
 
 use crate::schema::MetadataExtractor;
@@ -20,11 +21,11 @@ impl MetadataExtractor for Emote<'_> {
         let timelines = (0..7)
             .map(|i| row.field(1 + i))
             .collect::<Result<Vec<_>, _>>()
-            .map_err(super::Error::Ironworks)?
+            .context("could not get field")?
             .into_iter()
             .map(|field| field.into_u16())
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|_| super::Error::FieldWrongType)?;
+            .map_err(|_| anyhow::format_err!("field was wrong type"))?;
 
         let item = crate::populate!(
             row,

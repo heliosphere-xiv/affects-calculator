@@ -4,9 +4,6 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
-binrw = "0.14"
-ironworks = { git = "https://github.com/ackwell/ironworks", rev = "be80e8433ccc58bcbf19aa9173b6331c1d4ea09e", features = ["excel", "sestring", "sqpack"] }
+affects-common = { path = "../affects-common" }
 path-parser = { path = "../path-parser" }
-serde = { version = "1", features = ["derive"] }
-serde_repr = "0.1"
-thiserror = "2"
+serde_json = "1"

@@ -1,6 +1,9 @@
-use affects_calculator::schema::{Map, MetadataProvider, PlaceName};
+use affects_common::ItemKind;
 
-use crate::{analysers::GeneratorContext, containers::ItemKind};
+use crate::{
+    analysers::GeneratorContext,
+    schema::{Map, MetadataProvider, PlaceName},
+};
 
 pub fn analyse_maps(ctx: &mut GeneratorContext) {
     let maps = ctx

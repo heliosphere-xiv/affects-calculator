@@ -1,3 +1,4 @@
+use anyhow::Context;
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::schema::MetadataExtractor;
@@ -21,9 +22,9 @@ impl MetadataExtractor for ModelChara {
     fn populate_row(row: ironworks::excel::Row) -> Result<Self, Self::Error> {
         let kind = ModelCharaKind::from(
             row.field(0)
-                .map_err(super::Error::Ironworks)?
+                .context("could not get field")?
                 .into_u8()
-                .map_err(|_| super::Error::FieldWrongType)?,
+                .map_err(|_| anyhow::format_err!("field was wrong type"))?,
         );
 
         let item = crate::populate!(

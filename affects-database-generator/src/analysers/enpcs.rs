@@ -1,11 +1,12 @@
 use std::collections::BTreeMap;
 
-use affects_calculator::{
+use affects_common::ItemKind;
+
+use crate::{
+    analysers::GeneratorContext,
     formats::imc::{ImcFile, RawImcFile},
     schema::{ENpcBase, ENpcResident, MetadataProvider, ModelChara, ModelCharaKind},
 };
-
-use crate::{analysers::GeneratorContext, containers::ItemKind};
 
 pub fn analyse_enpcs(ctx: &mut GeneratorContext) {
     let enpc_bases = ctx
@@ -35,7 +36,7 @@ pub fn analyse_enpcs(ctx: &mut GeneratorContext) {
             _ => continue,
         };
 
-        let resident = match enpc_residents.get(&(enpc.row_id as u32)) {
+        let resident = match enpc_residents.get(&{ enpc.row_id }) {
             Some(resident) => resident,
             _ => continue,
         };
@@ -65,7 +66,7 @@ pub fn analyse_enpcs(ctx: &mut GeneratorContext) {
                     base = model_chara.base,
                 ))
                 .ok()
-                .and_then(|file| ImcFile::try_from_raw(file).ok());
+                .and_then(ImcFile::try_from_raw);
             if let Some(imc) = imc {
                 let imc_variant = &imc.parts[0].variants[variant_id as usize - 1];
                 variant_id = imc_variant.material_id;
@@ -87,7 +88,7 @@ pub fn analyse_enpcs(ctx: &mut GeneratorContext) {
                     .ironworks
                     .file::<RawImcFile>(&imc_path)
                     .ok()
-                    .and_then(|file| ImcFile::try_from_raw(file).ok())
+                    .and_then(ImcFile::try_from_raw)
                 {
                     Some(imc) => imc,
                     None => continue,

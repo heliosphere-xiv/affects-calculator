@@ -1,6 +1,8 @@
 [workspace]
 resolver = "3"
 members = [
+    "affects-calculator",
+    "affects-common",
+    "affects-database-generator",
     "path-parser",
-    "affects-calculator", "affects-database-generator",
 ]

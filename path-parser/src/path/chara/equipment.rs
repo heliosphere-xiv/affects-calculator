@@ -1,3 +1,4 @@
+use affects_common::EquipSlot;
 use nom::{
     Parser,
     branch::alt,
@@ -7,8 +8,8 @@ use nom::{
 };
 
 use crate::{
-    EquipSlot, GamePath, IResult, ModelInfo, Result, check_repeat_id, equip_slot, n_digit_id,
-    path_id, types::model_info,
+    GamePath, IResult, ModelInfo, Result, check_repeat_id, equip_slot, n_digit_id, path_id,
+    types::model_info,
 };
 
 #[derive(Debug, PartialEq, Eq)]

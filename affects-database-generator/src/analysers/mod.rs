@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
 
+use affects_common::Affects;
 use ironworks::{Ironworks, excel::Excel};
 
-use crate::containers::{Affects, BNpcContainer};
+use crate::containers::BNpcContainer;
 
 mod actions;
 mod bnpcs;

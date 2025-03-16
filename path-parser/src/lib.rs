@@ -12,6 +12,7 @@ mod test;
 
 use std::str::FromStr;
 
+use affects_common::EquipSlot;
 use nom::{
     Parser,
     branch::alt,
@@ -24,7 +25,7 @@ use crate::{
     path::chara::{
         AccessoryPath, CharacterPath, DemihumanPath, EquipmentPath, MonsterPath, WeaponPath,
     },
-    types::{EquipSlot, Language, ModelInfo},
+    types::{Language, ModelInfo},
 };
 
 type Result<'a, T, E = Error<'a>> = std::result::Result<T, E>;

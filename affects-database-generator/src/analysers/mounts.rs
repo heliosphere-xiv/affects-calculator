@@ -1,9 +1,10 @@
-use affects_calculator::{
+use affects_common::ItemKind;
+
+use crate::{
+    analysers::GeneratorContext,
     formats::imc::{ImcFile, RawImcFile},
     schema::{MetadataProvider, ModelChara, ModelCharaKind, Mount},
 };
-
-use crate::{analysers::GeneratorContext, containers::ItemKind};
 
 pub fn analyse_mounts(ctx: &mut GeneratorContext) {
     let mounts = ctx
@@ -39,7 +40,7 @@ pub fn analyse_mounts(ctx: &mut GeneratorContext) {
                     base = model_chara.base,
                 ))
                 .ok()
-                .and_then(|file| ImcFile::try_from_raw(file).ok());
+                .and_then(ImcFile::try_from_raw);
             if let Some(imc) = imc {
                 let imc_variant = &imc.parts[0].variants[variant_id as usize - 1];
                 variant_id = imc_variant.material_id;

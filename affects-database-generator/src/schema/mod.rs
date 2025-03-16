@@ -8,7 +8,6 @@ mod emote;
 mod enpc_base;
 mod enpc_resident;
 mod equip_slot_category;
-mod error;
 mod extractor;
 mod item;
 mod map;
@@ -31,7 +30,6 @@ pub use self::{
     enpc_base::ENpcBase,
     enpc_resident::ENpcResident,
     equip_slot_category::EquipSlotCategory,
-    error::Error,
     extractor::MetadataExtractor,
     item::Item,
     map::Map,
@@ -44,6 +42,18 @@ pub use self::{
     text_command::TextCommand,
 };
 
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error("{0}")]
+    Anyhow(anyhow::Error),
+}
+
+impl From<anyhow::Error> for Error {
+    fn from(value: anyhow::Error) -> Self {
+        Self::Anyhow(value)
+    }
+}
+
 #[macro_export]
 macro_rules! populate {
     (
@@ -55,13 +65,15 @@ macro_rules! populate {
             $field_name_2: ident: $value: expr,
         )*
     ) => {{
+        use ::anyhow::Context;
+
         Self {
             $(
                 $field_name: $row
                     .field($field)
-                    .map_err($crate::schema::Error::Ironworks)?
+                    .context("could not get field")?
                     .$converter()
-                    .map_err(|_| $crate::schema::Error::FieldWrongType)?,
+                    .map_err(|_| ::anyhow::format_err!("field was wrong type"))?,
             )*
             $(
                 $field_name_2: $value,

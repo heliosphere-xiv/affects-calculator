@@ -1,12 +1,12 @@
 use std::collections::BTreeMap;
 
-use affects_calculator::{
+use affects_common::{EquipSlot, ItemKind};
+
+use crate::{
+    analysers::GeneratorContext,
     formats::imc::{ImcFile, RawImcFile},
     schema::{EquipSlotCategory, Item, MetadataProvider},
 };
-use path_parser::types::EquipSlot;
-
-use crate::{analysers::GeneratorContext, containers::ItemKind};
 
 pub fn analyse_items(ctx: &mut GeneratorContext) {
     let items = ctx
@@ -58,7 +58,7 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                     .ironworks
                     .file::<RawImcFile>(&imc_path)
                     .ok()
-                    .and_then(|file| ImcFile::try_from_raw(file).ok());
+                    .and_then(ImcFile::try_from_raw);
                 if let Some(imc) = imc {
                     if let Some(part_idx) = slot.to_imc_part_idx() {
                         let imc_variant = &imc.parts[part_idx].variants[variant_id as usize - 1];
@@ -112,7 +112,7 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                         "chara/weapon/w{model_id:<04}/obj/body/b{weapon_id:<04}/b{weapon_id:<04}.imc"
                     ))
                     .ok()
-                    .and_then(|file| ImcFile::try_from_raw(file).ok());
+                    .and_then(ImcFile::try_from_raw);
                 if let Some(imc) = imc {
                     let imc_variant = &imc.parts[0].variants[variant_id as usize - 1];
                     variant_id = imc_variant.material_id;

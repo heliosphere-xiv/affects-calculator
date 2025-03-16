@@ -8,7 +8,7 @@ pub struct Action<'a> {
     pub animation_start: u8,
     pub animation_end: i16,
     pub animation_hit: u16,
-    pub vfx: u16,
+    // pub vfx: u16,
 }
 
 impl MetadataExtractor for Action<'_> {
@@ -23,7 +23,7 @@ impl MetadataExtractor for Action<'_> {
             row,
             [name, 0, into_string],
             [animation_start, 5, into_u8],
-            [vfx, 6, into_u16],
+            // [vfx, 6, into_u16],
             [animation_end, 7, into_i16],
             [animation_hit, 8, into_u16],
         );

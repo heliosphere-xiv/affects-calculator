@@ -1,6 +1,9 @@
-use affects_calculator::schema::{Action, ActionCastTimeline, ActionTimeline, MetadataProvider};
+use affects_common::ItemKind;
 
-use crate::{analysers::GeneratorContext, containers::ItemKind};
+use crate::{
+    analysers::GeneratorContext,
+    schema::{Action, ActionCastTimeline, ActionTimeline, MetadataProvider},
+};
 
 pub fn analyse_actions(ctx: &mut GeneratorContext) {
     let actions = ctx

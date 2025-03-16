@@ -1,11 +1,12 @@
 use std::collections::BTreeMap;
 
-use affects_calculator::{
+use affects_common::ItemKind;
+
+use crate::{
+    analysers::GeneratorContext,
     formats::imc::{ImcFile, RawImcFile},
     schema::{BNpcBase, BNpcName, MetadataProvider, ModelChara, ModelCharaKind, NpcEquip},
 };
-
-use crate::{analysers::GeneratorContext, containers::ItemKind};
 
 pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
     let bnpc_bases = ctx
@@ -73,7 +74,7 @@ pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
                     base = model_chara.base,
                 ))
                 .ok()
-                .and_then(|file| ImcFile::try_from_raw(file).ok());
+                .and_then(ImcFile::try_from_raw);
             if let Some(imc) = imc {
                 let imc_variant = &imc.parts[0].variants[variant_id as usize - 1];
                 variant_id = imc_variant.material_id;
@@ -100,7 +101,7 @@ pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
                     .ironworks
                     .file::<RawImcFile>(&imc_path)
                     .ok()
-                    .and_then(|file| ImcFile::try_from_raw(file).ok())
+                    .and_then(ImcFile::try_from_raw)
                 {
                     Some(imc) => imc,
                     None => continue,

@@ -1,6 +1,9 @@
-use affects_calculator::schema::{ActionTimeline, Emote, MetadataProvider, TextCommand};
+use affects_common::ItemKind;
 
-use crate::{analysers::GeneratorContext, containers::ItemKind};
+use crate::{
+    analysers::GeneratorContext,
+    schema::{ActionTimeline, Emote, MetadataProvider, TextCommand},
+};
 
 pub fn analyse_emotes(ctx: &mut GeneratorContext) {
     let emotes = ctx

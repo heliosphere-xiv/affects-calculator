@@ -1,6 +1,7 @@
-use affects_calculator::formats::imc::{ImcFile, RawImcFile};
-
-use crate::analysers::GeneratorContext;
+use crate::{
+    analysers::GeneratorContext,
+    formats::imc::{ImcFile, RawImcFile},
+};
 
 pub fn analyse_monster_imcs(ctx: &mut GeneratorContext) {
     for (&model_id, bases) in &ctx.affects.monsters {
@@ -13,7 +14,7 @@ pub fn analyse_monster_imcs(ctx: &mut GeneratorContext) {
                     base = base_id,
                 ))
                 .ok()
-                .and_then(|file| ImcFile::try_from_raw(file).ok())
+                .and_then(ImcFile::try_from_raw)
             {
                 Some(imc) => imc,
                 None => continue,

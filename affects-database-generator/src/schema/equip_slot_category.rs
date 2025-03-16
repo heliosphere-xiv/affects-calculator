@@ -1,4 +1,4 @@
-use path_parser::types::EquipSlot;
+use affects_common::EquipSlot;
 
 use crate::schema::MetadataExtractor;
 

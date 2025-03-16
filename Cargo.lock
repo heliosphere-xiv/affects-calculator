@@ -12,12 +12,17 @@ checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 name = "affects-calculator"
 version = "1.0.0"
 dependencies = [
- "binrw",
- "ironworks",
+ "affects-common",
  "path-parser",
+ "serde_json",
+]
+
+[[package]]
+name = "affects-common"
+version = "0.1.0"
+dependencies = [
  "serde",
  "serde_repr",
- "thiserror",
 ]
 
 [[package]]
@@ -25,12 +30,16 @@ name = "affects-database-generator"
 version = "2.0.0"
 dependencies = [
  "affects-calculator",
+ "affects-common",
+ "anyhow",
+ "binrw",
  "clap",
  "ironworks",
  "path-parser",
  "serde",
  "serde_json",
  "serde_repr",
+ "thiserror",
  "ureq",
 ]
 
@@ -83,6 +92,12 @@ dependencies = [
  "once_cell",
  "windows-sys 0.59.0",
 ]
+
+[[package]]
+name = "anyhow"
+version = "1.0.97"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dcfed56ad506cb2c684a14971b8861fdc3baaaae314b9e5f9bb532cbe3ba7a4f"
 
 [[package]]
 name = "array-init"
@@ -650,6 +665,7 @@ checksum = "c1b04fb49957986fdce4d6ee7a65027d55d4b6d2265e5848bbb507b58ccfdb6f"
 name = "path-parser"
 version = "1.0.0"
 dependencies = [
+ "affects-common",
  "nom",
  "nom-language",
  "serde",

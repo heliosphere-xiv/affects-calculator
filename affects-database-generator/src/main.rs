@@ -6,6 +6,7 @@ use std::{
     time::Instant,
 };
 
+use affects_common::Affects;
 use clap::Parser;
 use ironworks::{
     Ironworks,
@@ -16,12 +17,14 @@ use ironworks::{
 use crate::{
     analysers::GeneratorContext,
     cli::CliArguments,
-    containers::{Affects, BNpcContainer, GraphqlContainer},
+    containers::{BNpcContainer, GraphqlContainer},
 };
 
 mod analysers;
 mod cli;
 mod containers;
+mod formats;
+mod schema;
 
 fn time(name: &str, mut f: impl FnMut()) {
     print!("{name}...");
