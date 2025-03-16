@@ -1,11 +1,13 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use affects_common::ItemKind;
 
 use crate::{
     analysers::GeneratorContext,
     formats::imc::{ImcFile, RawImcFile},
-    schema::{BNpcBase, BNpcName, MetadataProvider, ModelChara, ModelCharaKind, NpcEquip},
+    schema::{
+        BNpcBase, BNpcName, Companion, MetadataProvider, ModelChara, ModelCharaKind, NpcEquip,
+    },
 };
 
 pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
@@ -36,8 +38,20 @@ pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
         .into_iter()
         .map(|equip| (equip.row_id, equip))
         .collect::<BTreeMap<_, _>>();
+    let minions = ctx
+        .excel
+        .sheet(MetadataProvider::<Companion>::for_sheet())
+        .unwrap()
+        .into_iter()
+        .map(|minion| minion.model)
+        .collect::<BTreeSet<_>>();
 
     for bnpc in bnpc_bases {
+        if minions.contains(&bnpc.model_chara) {
+            // we don't need the battle npc minions
+            continue;
+        }
+
         let model_chara = match model_charas.get(&(bnpc.model_chara as u32)) {
             Some(mc) if !mc.kind.is_other() => mc,
             _ => continue,
