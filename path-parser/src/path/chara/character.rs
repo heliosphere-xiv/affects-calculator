@@ -48,7 +48,12 @@ pub enum CharacterPath<'a> {
         slot: SkeletonSlot,
     },
     Tmb(&'a str),
-    Pap(&'a str),
+    Pap {
+        primary_id: u16,
+        model_info: ModelInfo,
+        category: Option<&'a str>,
+        key: &'a str,
+    },
     Atch(ModelInfo),
 }
 
@@ -97,6 +102,58 @@ impl BodyType {
             Self::Hair => "h",
             Self::Tail => "t",
         }
+    }
+}
+
+impl std::fmt::Display for BodyType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Body => "Body",
+            Self::Ear => "Ears",
+            Self::Face => "Face",
+            Self::Hair => "Hair",
+            Self::Tail => "Tail",
+        };
+
+        write!(f, "{s}")
+    }
+}
+
+impl std::fmt::Display for BodyTypeSlot {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Ear => "Ears",
+            Self::Face => "Face",
+            Self::Hair => "Hair",
+            Self::Tail => "Tail",
+            Self::Iris => "Iris",
+            Self::Accessory => "Accessory",
+            Self::Etc => "Etc.",
+
+            Self::Head => "Helmet",
+            Self::Hands => "Gloves",
+            Self::Legs => "Pants",
+            Self::Feet => "Shoes",
+            Self::Body => "Top",
+            Self::Ears => "Earrings",
+            Self::Neck => "Necklace",
+            Self::RFinger => "Ring",
+            Self::LFinger => "Ring",
+            Self::Wrists => "Bracelet",
+        };
+
+        write!(f, "{s}")
+    }
+}
+
+impl std::fmt::Display for DecalType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Face => "Face",
+            Self::Equip => "Equipment",
+        };
+
+        write!(f, "{s}")
     }
 }
 
@@ -351,13 +408,10 @@ fn tmb_path(input: &str) -> IResult<&str, CharacterPath> {
 fn pap_path(input: &str) -> IResult<&str, CharacterPath> {
     map(
         (
-            delimited(tag("human/"), path_id("c"), tag("/")),
+            delimited(tag("human/"), preceded(tag("c"), model_info), tag("/")),
             delimited(tag("animation/"), path_id("a"), tag("/")),
-            delimited(
-                opt((tag("bt_"), take_till(|c| c == '/'), tag("/"))),
-                take_until(".pap"),
-                tag(".pap"),
-            ),
+            opt(delimited(tag("bt_"), take_till(|c| c == '/'), tag("/"))),
+            terminated(take_until(".pap"), tag(".pap")),
         ),
         // old way
         // delimited(
@@ -365,7 +419,12 @@ fn pap_path(input: &str) -> IResult<&str, CharacterPath> {
         //     take_until(".pap"),
         //     tag(".pap"),
         // ),
-        |(_model_id, _primary_id, anim_key)| CharacterPath::Pap(anim_key),
+        |(model_info, primary_id, category, anim_key)| CharacterPath::Pap {
+            primary_id,
+            model_info,
+            category,
+            key: anim_key,
+        },
     )
     .parse(input)
 }
@@ -631,7 +690,16 @@ mod test {
 
         test_path(
             PATH,
-            GamePath::Character(CharacterPath::Pap("ability/cnj_white/abl025")),
+            GamePath::Character(CharacterPath::Pap {
+                primary_id: 1,
+                category: Some("common"),
+                model_info: ModelInfo {
+                    race: Some(Race::Midlander),
+                    gender: Gender::Male,
+                    kind: ModelKind::Adult,
+                },
+                key: "ability/cnj_white/abl025",
+            }),
         );
     }
 

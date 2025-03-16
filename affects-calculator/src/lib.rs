@@ -7,8 +7,10 @@ pub use affects_common::{Affects, EquipSlot, ItemKind};
 use path_parser::{
     GamePath,
     path::chara::{
-        AccessoryPath, CharacterPath, DemihumanPath, EquipmentPath, MonsterPath, WeaponPath,
+        AccessoryPath, BodyType, BodyTypeSlot, CharacterPath, DemihumanPath, EquipmentPath,
+        MonsterPath, WeaponPath,
     },
+    types::SkeletonSlot,
 };
 
 pub trait CalculatesAffects {
@@ -378,7 +380,10 @@ impl CalculatesAffects for Affects {
                 slot,
             })) => single_name(
                 ItemKind::Customisation,
-                format!("{model_info} {body_type:?} {slot:?} {primary_id}"),
+                format!(
+                    "{model_info} {} {primary_id}",
+                    customisation_type(body_type, slot),
+                ),
             ),
             Ok(GamePath::Character(CharacterPath::Mtrl {
                 primary_id,
@@ -388,7 +393,10 @@ impl CalculatesAffects for Affects {
                 ..
             })) => single_name(
                 ItemKind::Customisation,
-                format!("{model_info} {body_type:?} {slot:?} {primary_id}",),
+                format!(
+                    "{model_info} {} {primary_id}",
+                    customisation_type(body_type, slot),
+                ),
             ),
             Ok(GamePath::Character(CharacterPath::Tex {
                 primary_id,
@@ -398,7 +406,14 @@ impl CalculatesAffects for Affects {
                 ..
             })) => single_name(
                 ItemKind::Customisation,
-                format!("{model_info} {body_type:?} {slot:?} {primary_id}",),
+                if slot.is_none() {
+                    format!("{model_info} Skin Textures")
+                } else {
+                    format!(
+                        "{model_info} {} {primary_id}",
+                        customisation_type(body_type, slot),
+                    )
+                },
             ),
             Ok(GamePath::Character(CharacterPath::Catchlight(catchlight))) => {
                 single_name(ItemKind::Customisation, format!("Catchlight {catchlight}"))
@@ -408,7 +423,7 @@ impl CalculatesAffects for Affects {
             }
             Ok(GamePath::Character(CharacterPath::Decal { kind, primary_id })) => single_name(
                 ItemKind::Customisation,
-                format!("{kind:?} Decal {primary_id}"),
+                format!("{kind} Decal {primary_id}"),
             ),
             Ok(GamePath::Character(CharacterPath::Skeleton {
                 primary_id,
@@ -416,39 +431,34 @@ impl CalculatesAffects for Affects {
                 slot,
             })) => single_name(
                 ItemKind::Customisation,
-                format!("{model_info} {slot:?} Skeleton {primary_id}"),
+                if slot == SkeletonSlot::Base {
+                    format!("{model_info} Skeleton {primary_id}")
+                } else {
+                    format!("{model_info} {slot} Skeleton {primary_id}")
+                },
             ),
-            Ok(GamePath::Character(
-                CharacterPath::Tmb(anim_key) | CharacterPath::Pap(anim_key),
-            )) => {
-                let mut names = anim_key
-                    .split('/')
-                    .last()
-                    .and_then(|key| self.emotes.get(key))
-                    .map(|names| {
-                        names
-                            .iter()
-                            .flat_map(|(kind, name, command)| {
-                                let name = self.names.get(*name as usize);
-                                let command =
-                                    command.and_then(|command| self.names.get(command as usize));
-                                match (name, command) {
-                                    (None, _) => None,
-                                    (Some(name), None) => Some((*kind, Cow::from(name))),
-                                    (Some(name), Some(command)) => {
-                                        Some((*kind, Cow::from(format!("{name} ({command})"))))
-                                    }
-                                }
-                            })
-                            .collect::<BTreeSet<_>>()
-                    })
-                    .unwrap_or_default();
+            Ok(GamePath::Character(CharacterPath::Tmb(anim_key))) => {
+                let names = check_basic_animations(self, anim_key);
+                if names.is_empty() { None } else { Some(names) }
+            }
+            Ok(GamePath::Character(CharacterPath::Pap {
+                model_info,
+                category,
+                key: anim_key,
+                ..
+            })) => {
+                let mut names = check_basic_animations(self, anim_key);
 
-                if let Some(actions) = self.actions.get(anim_key) {
-                    for &(kind, idx) in actions {
-                        if let Some(name) = self.names.get(idx as usize) {
-                            names.insert((kind, Cow::from(name)));
-                        }
+                if category == Some("common") {
+                    let extra = match anim_key {
+                        "resident/idle" => Some(format!("{model_info} idle")),
+                        "resident/move_a" => Some(format!("{model_info} movement")),
+                        "resident/move_b" => Some(format!("{model_info} movement")),
+                        _ => None,
+                    };
+
+                    if let Some(extra) = extra {
+                        names.insert((ItemKind::Animation, Cow::from(extra)));
                     }
                 }
 
@@ -456,7 +466,7 @@ impl CalculatesAffects for Affects {
             }
             Ok(GamePath::Character(CharacterPath::Atch(model_info))) => single_name(
                 ItemKind::Customisation,
-                format!("{model_info} attachment offsets",),
+                format!("{model_info} attachment offsets"),
             ),
 
             // icon
@@ -486,7 +496,7 @@ impl CalculatesAffects for Affects {
             Err(_) => {
                 let (kind, affects) = match path {
                     "chara/common/texture/decal_equip/_stigma.tex" => {
-                        (ItemKind::Customisation, "Archon Mark decal")
+                        (ItemKind::Customisation, "Archon Mark")
                     }
                     _ => {
                         let mut iter = path.split('/');
@@ -497,7 +507,7 @@ impl CalculatesAffects for Affects {
                                 (ItemKind::Miscellaneous, "Sound")
                             }
                             (Some("bg" | "bgcommon"), _) => (ItemKind::Miscellaneous, "World"),
-                            (Some("vfx"), _) => (ItemKind::Miscellaneous, "Vfx"),
+                            (Some("vfx"), _) => (ItemKind::Miscellaneous, "VFX"),
                             (Some("ui"), _) => (ItemKind::Miscellaneous, "Interface"),
                             (Some("shader"), _) => (ItemKind::Miscellaneous, "Shader"),
 
@@ -534,4 +544,53 @@ fn single_name_ref(kind: ItemKind, name: &str) -> Option<BTreeSet<(ItemKind, Cow
     let mut set = BTreeSet::new();
     set.insert((kind, Cow::from(name)));
     Some(set)
+}
+
+fn check_basic_animations<'affects>(
+    affects: &'affects Affects,
+    anim_key: &str,
+) -> BTreeSet<(ItemKind, Cow<'affects, str>)> {
+    let mut names = anim_key
+        .split('/')
+        .last()
+        .and_then(|key| affects.emotes.get(key))
+        .map(|names| {
+            names
+                .iter()
+                .flat_map(|(kind, name, command)| {
+                    let name = affects.names.get(*name as usize);
+                    let command = command.and_then(|command| affects.names.get(command as usize));
+                    match (name, command) {
+                        (None, _) => None,
+                        (Some(name), None) => Some((*kind, Cow::from(name))),
+                        (Some(name), Some(command)) => {
+                            Some((*kind, Cow::from(format!("{name} ({command})"))))
+                        }
+                    }
+                })
+                .collect::<BTreeSet<_>>()
+        })
+        .unwrap_or_default();
+
+    if let Some(actions) = affects.actions.get(anim_key) {
+        for &(kind, idx) in actions {
+            if let Some(name) = affects.names.get(idx as usize) {
+                names.insert((kind, Cow::from(name)));
+            }
+        }
+    }
+
+    names
+}
+
+fn customisation_type(kind: BodyType, slot: Option<BodyTypeSlot>) -> String {
+    match (kind, slot) {
+        (BodyType::Hair, Some(BodyTypeSlot::Hair))
+        | (BodyType::Face, Some(BodyTypeSlot::Face))
+        | (BodyType::Ear, Some(BodyTypeSlot::Ear))
+        | (BodyType::Body, Some(BodyTypeSlot::Body))
+        | (BodyType::Tail, Some(BodyTypeSlot::Tail)) => format!("{kind}"),
+        (kind, Some(slot)) if slot != BodyTypeSlot::Etc => format!("{kind} ({slot})"),
+        (kind, _) => format!("{kind}"),
+    }
 }

@@ -39,6 +39,28 @@ impl SkeletonSlot {
     }
 }
 
+impl std::fmt::Display for SkeletonSlot {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Head => "Helmet",
+            Self::Hands => "Gloves",
+            Self::Legs => "Pants",
+            Self::Feet => "Shoes",
+            Self::Body => "Top",
+            Self::Ears => "Earrings",
+            Self::Neck => "Necklace",
+            Self::RFinger => "Ring",
+            Self::LFinger => "Ring",
+            Self::Wrists => "Bracelet",
+            Self::Base => "Base",
+            Self::Face => "Face",
+            Self::Hair => "Hair",
+        };
+
+        write!(f, "{s}")
+    }
+}
+
 pub fn skeleton_slot(input: &str) -> IResult<&str, SkeletonSlot> {
     map_res(take_till(|c| c == '/'), SkeletonSlot::from_str).parse(input)
 }

@@ -57,6 +57,7 @@ pub enum ItemKind {
     Icon,
     Font,
     Miscellaneous,
+    Animation,
 }
 
 impl std::fmt::Display for ItemKind {
@@ -76,6 +77,7 @@ impl std::fmt::Display for ItemKind {
             Self::Icon => "Icon",
             Self::Font => "Font",
             Self::Miscellaneous => "Miscellaneous",
+            Self::Animation => "Animation",
         };
 
         write!(f, "{s}")

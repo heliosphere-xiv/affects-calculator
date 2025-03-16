@@ -1,8 +1,12 @@
 use nom::{Parser, branch::alt, bytes::complete::tag, sequence::preceded};
 
 pub use self::{
-    accessory::AccessoryPath, character::CharacterPath, demihuman::DemihumanPath,
-    equipment::EquipmentPath, monster::MonsterPath, weapon::WeaponPath,
+    accessory::AccessoryPath,
+    character::{BodyType, BodyTypeSlot, CharacterPath, DecalType},
+    demihuman::DemihumanPath,
+    equipment::EquipmentPath,
+    monster::MonsterPath,
+    weapon::WeaponPath,
 };
 use crate::{
     GamePath, IResult,
