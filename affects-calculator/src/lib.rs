@@ -3,7 +3,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
 };
 
-use affects_common::{Affects, ItemKind};
+pub use affects_common::{Affects, EquipSlot, ItemKind};
 use path_parser::{
     GamePath,
     path::chara::{
