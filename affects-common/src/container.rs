@@ -58,3 +58,26 @@ pub enum ItemKind {
     Font,
     Miscellaneous,
 }
+
+impl std::fmt::Display for ItemKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Gear => "Gear",
+            Self::Weapon => "Weapon",
+            Self::Emote => "Emote",
+            Self::BattleNpc => "Battle NPC",
+            Self::EventNpc => "Event NPC",
+            Self::Minion => "Minion",
+            Self::Mount => "Mount",
+            Self::FashionAccessory => "Fashion Accessory",
+            Self::Customisation => "Customisation",
+            Self::Action => "Action",
+            Self::Map => "Map",
+            Self::Icon => "Icon",
+            Self::Font => "Font",
+            Self::Miscellaneous => "Miscellaneous",
+        };
+
+        write!(f, "{s}")
+    }
+}
