@@ -449,16 +449,50 @@ impl CalculatesAffects for Affects {
             })) => {
                 let mut names = check_basic_animations(self, anim_key);
 
-                if category == Some("common") {
-                    let extra = match anim_key {
-                        "resident/idle" => Some(format!("{model_info} idle")),
-                        "resident/move_a" => Some(format!("{model_info} movement")),
-                        "resident/move_b" => Some(format!("{model_info} movement")),
+                let kind = match anim_key {
+                    "resident/idle" => Some("idle"),
+                    "resident/move_a" => Some("movement"),
+                    "resident/move_b" => Some("movement"),
+                    "emote/b_pose01_loop" => Some("/cpose"),
+                    "emote/b_pose01_start" => Some("/cpose"),
+                    _ => None,
+                };
+
+                if let Some(kind) = kind {
+                    let job = match category {
+                        Some("common") => Some(""),
+                        Some("2ax_emp") => Some(" WAR"),
+                        Some("2bk_emp") => Some(" SCH/SMN"),
+                        Some("2bw_emp") => Some(" BRD"),
+                        Some("2ff_emp") => Some(" SGE"),
+                        Some("2gb_emp") => Some(" GNB"),
+                        Some("2gl_emp") => Some(" AST"),
+                        Some("2gn_emp") => Some(" MCH"),
+                        Some("2km_emp") => Some(" RPR"),
+                        Some("2kt_emp") => Some(" SAM"),
+                        Some("2rp_emp") => Some(" RDM"),
+                        Some("2sp_emp") => Some(" DRG"),
+                        Some("2sw_emp") => Some(" DRK"),
+                        Some("bld_bld") => Some(" VPR"),
+                        Some("brs_plt") => Some(" PCT"),
+                        Some("chk_chk") => Some(" DNC"),
+                        Some("clw_clw") => Some(" MNK"),
+                        Some("dgr_dgr") => Some(" NIN"),
+                        Some("rod_emp") => Some(" BLU"),
+                        Some("swd_sld") => Some(" PLD"),
+
+                        // weird special cases
+                        Some("stf_sld") if kind == "idle" => Some(" WHM"),
+                        Some("stf_sld") if kind == "movement" => Some(" WHM/BLM"),
+
+                        Some("2st_emp") => Some(" WHM"),
+                        Some("jst_sld") => Some(" BLM"),
+
                         _ => None,
                     };
 
-                    if let Some(extra) = extra {
-                        names.insert((ItemKind::Animation, Cow::from(extra)));
+                    if let Some(job) = job {
+                        names.insert((ItemKind::Animation, Cow::from(format!("{model_info}{job} {kind}"))));
                     }
                 }
 
