@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use affects_common::Affects;
+use affects_common::{Affects, ItemKind};
 use ironworks::{Ironworks, excel::Excel};
 
 use crate::containers::BNpcContainer;
@@ -31,7 +31,7 @@ pub struct GeneratorContext<'a> {
 }
 
 impl GeneratorContext<'_> {
-    pub fn get_name_idx<S: Into<String>>(&mut self, name: S) -> u16 {
+    pub fn get_name_idx<S: Into<String>>(&mut self, kind: ItemKind, name: S) -> u16 {
         let name = name.into();
         if let Some(&idx) = self.name_map.get(&name) {
             return idx;
@@ -42,6 +42,12 @@ impl GeneratorContext<'_> {
         let name_idx = u16::try_from(name_idx).expect("name idx exceeded 16 bits");
 
         self.name_map.insert(name, name_idx);
+
+        self.affects
+            .name_kinds
+            .entry(name_idx)
+            .or_default()
+            .insert(kind);
 
         name_idx
     }

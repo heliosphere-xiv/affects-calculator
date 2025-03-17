@@ -68,7 +68,12 @@ pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
                     .and_then(|name| name.singular.format().ok())
                     .filter(|name| !name.is_empty())
             })
-            .map(|name| (ItemKind::BattleNpc, ctx.get_name_idx(name)))
+            .map(|name| {
+                (
+                    ItemKind::BattleNpc,
+                    ctx.get_name_idx(ItemKind::BattleNpc, name),
+                )
+            })
             .collect::<Vec<_>>();
 
         if names.is_empty() {

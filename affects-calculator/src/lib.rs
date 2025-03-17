@@ -492,7 +492,10 @@ impl CalculatesAffects for Affects {
                     };
 
                     if let Some(job) = job {
-                        names.insert((ItemKind::Animation, Cow::from(format!("{model_info}{job} {kind}"))));
+                        names.insert((
+                            ItemKind::Animation,
+                            Cow::from(format!("{model_info}{job} {kind}")),
+                        ));
                     }
                 }
 
@@ -591,17 +594,8 @@ fn check_basic_animations<'affects>(
         .map(|names| {
             names
                 .iter()
-                .flat_map(|(kind, name, command)| {
-                    let name = affects.names.get(*name as usize);
-                    let command = command.and_then(|command| affects.names.get(command as usize));
-                    match (name, command) {
-                        (None, _) => None,
-                        (Some(name), None) => Some((*kind, Cow::from(name))),
-                        (Some(name), Some(command)) => {
-                            Some((*kind, Cow::from(format!("{name} ({command})"))))
-                        }
-                    }
-                })
+                .flat_map(|(kind, name)| affects.names.get(*name as usize).map(|name| (kind, name)))
+                .map(|(kind, name)| (*kind, Cow::from(name)))
                 .collect::<BTreeSet<_>>()
         })
         .unwrap_or_default();

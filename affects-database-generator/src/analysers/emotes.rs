@@ -46,12 +46,15 @@ pub fn analyse_emotes(ctx: &mut GeneratorContext) {
             None => continue,
         };
 
-        let name_idx = ctx.get_name_idx(name);
-        let command_idx = command.map(|command| ctx.get_name_idx(command));
+        let name = command
+            .map(|command| format!("{name} ({command})"))
+            .unwrap_or(name);
+
+        let name_idx = ctx.get_name_idx(ItemKind::Emote, name);
         ctx.affects
             .emotes
             .entry(key)
             .or_default()
-            .insert((ItemKind::Emote, name_idx, command_idx));
+            .insert((ItemKind::Emote, name_idx));
     }
 }

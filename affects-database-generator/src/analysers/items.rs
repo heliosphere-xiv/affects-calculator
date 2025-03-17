@@ -66,7 +66,7 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                     }
                 }
 
-                let name_idx = ctx.get_name_idx(&name);
+                let name_idx = ctx.get_name_idx(ItemKind::Gear, &name);
                 ctx.affects
                     .equipment
                     .entry(slot)
@@ -118,7 +118,7 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                     variant_id = imc_variant.material_id;
                 }
 
-                let name_idx = ctx.get_name_idx(&name);
+                let name_idx = ctx.get_name_idx(ItemKind::Weapon, &name);
                 ctx.affects
                     .weapons
                     .entry(model_id)
@@ -182,7 +182,7 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                 let weapon = ((item.model_sub >> 16) & 0xFFFF) as u16;
                 let variant = ((item.model_sub >> 32) & 0xFF) as u8;
 
-                let name_idx = ctx.get_name_idx(format!("{name}{append}"));
+                let name_idx = ctx.get_name_idx(ItemKind::Weapon, format!("{name}{append}"));
                 ctx.affects
                     .weapons
                     .entry(model)

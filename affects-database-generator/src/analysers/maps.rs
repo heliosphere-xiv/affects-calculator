@@ -65,7 +65,7 @@ pub fn analyse_maps(ctx: &mut GeneratorContext) {
             }
         }
 
-        let name_idx = ctx.get_name_idx(name);
+        let name_idx = ctx.get_name_idx(ItemKind::Map, name);
         ctx.affects
             .maps
             .entry(id)

@@ -129,7 +129,7 @@ pub fn analyse_enpcs(ctx: &mut GeneratorContext) {
             }
         }
 
-        let name_idx = ctx.get_name_idx(name);
+        let name_idx = ctx.get_name_idx(ItemKind::EventNpc, name);
         let map = match model_chara.kind {
             ModelCharaKind::Demihuman => &mut ctx.affects.demihumans,
             ModelCharaKind::Monster => &mut ctx.affects.monsters,

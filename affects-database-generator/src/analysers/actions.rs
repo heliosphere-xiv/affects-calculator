@@ -50,7 +50,7 @@ pub fn analyse_actions(ctx: &mut GeneratorContext) {
                 _ => return,
             };
 
-            let name_idx = ctx.get_name_idx(name);
+            let name_idx = ctx.get_name_idx(ItemKind::Action, name);
             ctx.affects
                 .actions
                 .entry(key)

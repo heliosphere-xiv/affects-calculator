@@ -10,12 +10,15 @@ type NameSet = BTreeSet<(ItemKind, u16)>;
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Affects {
     pub names: Vec<String>,
+    // name index => set of item kinds
+    pub name_kinds: BTreeMap<u16, BTreeSet<ItemKind>>,
+
     /// slot => model => variant => set of name indices
     pub equipment: BTreeMap<EquipSlot, BTreeMap<u16, BTreeMap<u8, NameSet>>>,
     /// model => secondary => variant => set of name indices
     pub weapons: BTreeMap<u16, BTreeMap<u16, BTreeMap<u8, NameSet>>>,
-    /// timeline key => set of name indices (name, command)
-    pub emotes: BTreeMap<String, BTreeSet<(ItemKind, u16, Option<u16>)>>,
+    /// timeline key => set of name indices
+    pub emotes: BTreeMap<String, NameSet>,
     /// model => base => variant => set of name indices
     pub monsters: BTreeMap<u16, BTreeMap<u8, BTreeMap<u8, NameSet>>>,
     /// model => base => variant => set of name indices
