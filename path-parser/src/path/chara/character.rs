@@ -37,7 +37,10 @@ pub enum CharacterPath<'a> {
         slot: Option<BodyTypeSlot>,
     },
     Catchlight(&'a str),
-    Eye(u8),
+    Eye {
+        id: u8,
+        kind: &'a str,
+    },
     Skin(&'a str),
     Decal {
         kind: DecalType,
@@ -337,7 +340,7 @@ fn eye_path(input: &str) -> IResult<&str, CharacterPath> {
             delimited(tag("common/texture/eye/eye"), n_digit_id::<u8>(2), tag("_")),
             terminated(take_till(|c| c == '.'), tag(".tex")),
         ),
-        |(id, _)| CharacterPath::Eye(id),
+        |(id, kind)| CharacterPath::Eye { id, kind },
     )
     .parse(input)
 }
@@ -633,7 +636,13 @@ mod test {
     #[test]
     fn eye() {
         const PATH: &str = "chara/common/texture/eye/eye02_base.tex";
-        test_path(PATH, GamePath::Character(CharacterPath::Eye(2)));
+        test_path(
+            PATH,
+            GamePath::Character(CharacterPath::Eye {
+                id: 2,
+                kind: "base",
+            }),
+        );
     }
 
     #[test]

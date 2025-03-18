@@ -418,8 +418,211 @@ impl CalculatesAffects for Affects {
             Ok(GamePath::Character(CharacterPath::Catchlight(catchlight))) => {
                 single_name(ItemKind::Customisation, format!("Catchlight {catchlight}"))
             }
-            Ok(GamePath::Character(CharacterPath::Eye(id))) => {
-                single_name(ItemKind::Customisation, format!("Eyes {id}"))
+            Ok(GamePath::Character(CharacterPath::Eye { id, kind })) => {
+                use const_format::formatcp;
+
+                const EYES: &str = "Eyes";
+                const FEMALE: &str = "Female";
+                const MALE: &str = "Male";
+                const MIDLANDER: &str = "Midlander";
+                const HIGHLANDER: &str = "Highlander";
+                const DUSKWIGHT: &str = "Duskwight";
+                const WILDWOOD: &str = "Wildwood";
+                const PLAINSFOLK: &str = "Plainsfolk";
+                const DUNESFOLK: &str = "Dunesfolk";
+                const SEEKER: &str = "Seeker of the Sun";
+                const KEEPER: &str = "Keeper of the Moon";
+                const SEA_WOLF: &str = "Sea Wolf";
+                const HELLSGUARD: &str = "Hellsguard";
+                const RAEN: &str = "Raen";
+                const XAELA: &str = "Xaela";
+                const HELIONS: &str = "Helions";
+                const THE_LOST: &str = "The Lost";
+                const RAVA: &str = "Rava";
+                const VEENA: &str = "Veena";
+
+                let races_and_tribes = match id {
+                    1 => match kind {
+                        "norm" => Some(
+                            &[
+                                formatcp!("{FEMALE} {MIDLANDER} {EYES}"),
+                                formatcp!("{MALE} {MIDLANDER} {EYES}"),
+                                formatcp!("{FEMALE} {HIGHLANDER} {EYES}"),
+                                formatcp!("{MALE} {HIGHLANDER} {EYES}"),
+                                formatcp!("{FEMALE} {DUSKWIGHT} {EYES}"),
+                                formatcp!("{MALE} {DUSKWIGHT} {EYES}"),
+                                formatcp!("{FEMALE} {WILDWOOD} {EYES}"),
+                                formatcp!("{MALE} {WILDWOOD} {EYES}"),
+                                formatcp!("{FEMALE} {PLAINSFOLK} {EYES}"),
+                                formatcp!("{MALE} {PLAINSFOLK} {EYES}"),
+                                formatcp!("{FEMALE} {SEEKER} {EYES}"),
+                                formatcp!("{MALE} {SEEKER} {EYES}"),
+                                formatcp!("{FEMALE} {KEEPER} {EYES}"),
+                                formatcp!("{MALE} {KEEPER} {EYES}"),
+                                formatcp!("{FEMALE} {SEA_WOLF} {EYES}"),
+                                formatcp!("{MALE} {SEA_WOLF} {EYES}"),
+                                formatcp!("{FEMALE} {HELLSGUARD} {EYES}"),
+                                formatcp!("{MALE} {HELLSGUARD} {EYES}"),
+                                formatcp!("{FEMALE} {RAEN} {EYES}"),
+                                formatcp!("{FEMALE} {XAELA} {EYES}"),
+                                formatcp!("{FEMALE} {RAVA} {EYES}"),
+                                formatcp!("{MALE} {RAVA} {EYES}"),
+                                formatcp!("{FEMALE} {VEENA} {EYES}"),
+                                formatcp!("{MALE} {VEENA} {EYES}"),
+                            ][..],
+                        ),
+                        "mask" => Some(
+                            &[
+                                formatcp!("{FEMALE} {MIDLANDER} {EYES}"),
+                                formatcp!("{MALE} {MIDLANDER} {EYES}"),
+                                formatcp!("{FEMALE} {HIGHLANDER} {EYES}"),
+                                formatcp!("{MALE} {HIGHLANDER} {EYES}"),
+                                formatcp!("{FEMALE} {DUSKWIGHT} {EYES}"),
+                                formatcp!("{MALE} {DUSKWIGHT} {EYES}"),
+                                formatcp!("{FEMALE} {WILDWOOD} {EYES}"),
+                                formatcp!("{MALE} {WILDWOOD} {EYES}"),
+                                formatcp!("{FEMALE} {PLAINSFOLK} {EYES}"),
+                                formatcp!("{MALE} {PLAINSFOLK} {EYES}"),
+                                formatcp!("{FEMALE} {DUNESFOLK} {EYES}"),
+                                formatcp!("{MALE} {DUNESFOLK} {EYES}"),
+                                formatcp!("{FEMALE} {SEEKER} {EYES}"),
+                                formatcp!("{MALE} {SEEKER} {EYES}"),
+                                formatcp!("{FEMALE} {KEEPER} {EYES}"),
+                                formatcp!("{MALE} {KEEPER} {EYES}"),
+                                formatcp!("{FEMALE} {SEA_WOLF} {EYES}"),
+                                formatcp!("{MALE} {SEA_WOLF} {EYES}"),
+                                formatcp!("{FEMALE} {HELLSGUARD} {EYES}"),
+                                formatcp!("{MALE} {HELLSGUARD} {EYES}"),
+                                formatcp!("{FEMALE} {RAEN} {EYES}"),
+                                formatcp!("{MALE} {RAEN} {EYES}"),
+                                formatcp!("{FEMALE} {XAELA} {EYES}"),
+                                formatcp!("{MALE} {XAELA} {EYES}"),
+                                formatcp!("{FEMALE} {RAVA} {EYES}"),
+                                formatcp!("{MALE} {RAVA} {EYES}"),
+                                formatcp!("{FEMALE} {VEENA} {EYES}"),
+                                formatcp!("{MALE} {VEENA} {EYES}"),
+                            ][..],
+                        ),
+                        "base" => Some(
+                            &[
+                                formatcp!("{FEMALE} {MIDLANDER} {EYES}"),
+                                formatcp!("{FEMALE} {RAVA} {EYES}"),
+                                formatcp!("{MALE} {VEENA} {EYES}"),
+                            ][..],
+                        ),
+                        _ => None,
+                    },
+                    2 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {SEEKER} {EYES}"),
+                            formatcp!("{MALE} {SEEKER} {EYES}"),
+                            formatcp!("{FEMALE} {VEENA} {EYES}"),
+                        ][..],
+                    ),
+                    3 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {KEEPER} {EYES}"),
+                            formatcp!("{MALE} {KEEPER} {EYES}"),
+                        ][..],
+                    ),
+                    4 => match kind {
+                        "norm" => Some(
+                            &[
+                                formatcp!("{FEMALE} {DUNESFOLK} {EYES}"),
+                                formatcp!("{MALE} {DUNESFOLK} {EYES}"),
+                                formatcp!("{MALE} {RAEN} {EYES}"),
+                                formatcp!("{MALE} {XAELA} {EYES}"),
+                            ][..],
+                        ),
+                        "base" => Some(
+                            &[
+                                formatcp!("{FEMALE} {PLAINSFOLK} {EYES}"),
+                                formatcp!("{MALE} {PLAINSFOLK} {EYES}"),
+                            ][..],
+                        ),
+                        _ => None,
+                    },
+                    5 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {DUNESFOLK} {EYES}"),
+                            formatcp!("{MALE} {DUNESFOLK} {EYES}"),
+                        ][..],
+                    ),
+                    6 => match kind {
+                        "norm" | "mask" => Some(
+                            &[
+                                formatcp!("{FEMALE} {HELIONS} {EYES}"),
+                                formatcp!("{MALE} {HELIONS} {EYES}"),
+                                formatcp!("{FEMALE} {THE_LOST} {EYES}"),
+                                formatcp!("{MALE} {THE_LOST} {EYES}"),
+                            ][..],
+                        ),
+                        "base" => Some(
+                            &[
+                                formatcp!("{FEMALE} {HELIONS} {EYES}"),
+                                formatcp!("{MALE} {HELIONS} {EYES}"),
+                            ][..],
+                        ),
+                        _ => None,
+                    },
+                    7 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {THE_LOST} {EYES}"),
+                            formatcp!("{MALE} {THE_LOST} {EYES}"),
+                        ][..],
+                    ),
+                    9 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {DUSKWIGHT} {EYES}"),
+                            formatcp!("{MALE} {DUSKWIGHT} {EYES}"),
+                            formatcp!("{FEMALE} {WILDWOOD} {EYES}"),
+                            formatcp!("{MALE} {WILDWOOD} {EYES}"),
+                            formatcp!("{MALE} {SEA_WOLF} {EYES}"), // faces 1 & 3
+                            formatcp!("{MALE} {HELLSGUARD} {EYES}"), // faces 1 & 3
+                        ][..],
+                    ),
+                    10 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {SEA_WOLF} {EYES}"),
+                            formatcp!("{FEMALE} {HELLSGUARD} {EYES}"),
+                            formatcp!("{FEMALE} {RAEN} {EYES}"),
+                            formatcp!("{FEMALE} {XAELA} {EYES}"),
+                        ][..],
+                    ),
+                    11 if kind == "base" => Some(
+                        &[
+                            formatcp!("{MALE} {MIDLANDER} {EYES}"), // faces 1-3 & 5-7
+                            formatcp!("{MALE} {HIGHLANDER} {EYES}"),
+                            formatcp!("{FEMALE} {HIGHLANDER} {EYES}"), // faces 1-3
+                            formatcp!("{MALE} {SEA_WOLF} {EYES}"),     // face 4
+                            formatcp!("{MALE} {HELLSGUARD} {EYES}"),   // face 4
+                            formatcp!("{MALE} {RAVA} {EYES}"),
+                        ][..],
+                    ),
+                    12 if kind == "base" => Some(
+                        &[
+                            formatcp!("{MALE} {MIDLANDER} {EYES}"), // face 4
+                        ][..],
+                    ),
+                    13 if kind == "base" => Some(
+                        &[
+                            formatcp!("{FEMALE} {HIGHLANDER} {EYES}"), // face 4
+                        ][..],
+                    ),
+                    14 if kind == "base" => Some(
+                        &[
+                            formatcp!("{MALE} {RAEN} {EYES}"),
+                            formatcp!("{MALE} {XAELA} {EYES}"),
+                        ][..],
+                    ),
+                    _ => None,
+                };
+
+                races_and_tribes.map(|list| {
+                    list.iter()
+                        .map(|&s| (ItemKind::Customisation, Cow::from(s)))
+                        .collect::<BTreeSet<_>>()
+                })
             }
             Ok(GamePath::Character(CharacterPath::Skin(skin))) => {
                 single_name(ItemKind::Customisation, format!("Skin {skin}"))
@@ -621,6 +824,7 @@ fn customisation_type(kind: BodyType, slot: Option<BodyTypeSlot>) -> String {
         | (BodyType::Ear, Some(BodyTypeSlot::Ear))
         | (BodyType::Body, Some(BodyTypeSlot::Body))
         | (BodyType::Tail, Some(BodyTypeSlot::Tail)) => format!("{kind}"),
+        (BodyType::Face, Some(BodyTypeSlot::Iris)) => "Eyes".into(),
         (kind, Some(slot)) if slot != BodyTypeSlot::Etc => format!("{kind} ({slot})"),
         (kind, _) => format!("{kind}"),
     }
