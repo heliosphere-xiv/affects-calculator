@@ -37,6 +37,7 @@ pub enum CharacterPath<'a> {
         slot: Option<BodyTypeSlot>,
     },
     Catchlight(&'a str),
+    Eye(u8),
     Skin(&'a str),
     Decal {
         kind: DecalType,
@@ -212,6 +213,7 @@ fn chara_path_complex(input: &str) -> IResult<&str, GamePath> {
     map(
         alt((
             catchlight_path,
+            eye_path,
             skin_path,
             decal_path,
             skeleton_path,
@@ -323,6 +325,19 @@ fn catchlight_path(input: &str) -> IResult<&str, CharacterPath> {
             tag(".tex"),
         ),
         CharacterPath::Catchlight,
+    )
+    .parse(input)
+}
+
+// chara/common/texture/eye
+
+fn eye_path(input: &str) -> IResult<&str, CharacterPath> {
+    map(
+        (
+            delimited(tag("common/texture/eye/eye"), n_digit_id::<u8>(2), tag("_")),
+            terminated(take_till(|c| c == '.'), tag(".tex")),
+        ),
+        |(id, _)| CharacterPath::Eye(id),
     )
     .parse(input)
 }
@@ -613,6 +628,12 @@ mod test {
         const PATH: &str = "chara/common/texture/catchlight_2.tex";
 
         test_path(PATH, GamePath::Character(CharacterPath::Catchlight("_2")));
+    }
+
+    #[test]
+    fn eye() {
+        const PATH: &str = "chara/common/texture/eye/eye02_base.tex";
+        test_path(PATH, GamePath::Character(CharacterPath::Eye(2)));
     }
 
     #[test]

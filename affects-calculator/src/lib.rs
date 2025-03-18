@@ -418,6 +418,9 @@ impl CalculatesAffects for Affects {
             Ok(GamePath::Character(CharacterPath::Catchlight(catchlight))) => {
                 single_name(ItemKind::Customisation, format!("Catchlight {catchlight}"))
             }
+            Ok(GamePath::Character(CharacterPath::Eye(id))) => {
+                single_name(ItemKind::Customisation, format!("Eyes {id}"))
+            }
             Ok(GamePath::Character(CharacterPath::Skin(skin))) => {
                 single_name(ItemKind::Customisation, format!("Skin {skin}"))
             }
