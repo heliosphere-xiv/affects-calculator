@@ -287,6 +287,38 @@ impl CalculatesAffects for Affects {
                     .copied()
                     .collect::<BTreeSet<_>>(),
             )),
+
+            // smallclothes special case
+            Ok(GamePath::Equipment(
+                EquipmentPath::Mdl { id, info, slot }
+                | EquipmentPath::Mtrl {
+                    primary_id: id,
+                    model_info: info,
+                    slot,
+                    ..
+                }
+                | EquipmentPath::Tex {
+                    primary_id: id,
+                    model_info: info,
+                    slot,
+                    ..
+                },
+            )) if id == 0 => {
+                let slot = match slot {
+                    EquipSlot::Head => "Head",
+                    EquipSlot::Hands => "Hands",
+                    EquipSlot::Legs => "Legs",
+                    EquipSlot::Feet => "Feet",
+                    EquipSlot::Body => "Body",
+                    EquipSlot::Ears => "Ears",
+                    EquipSlot::Neck => "Neck",
+                    EquipSlot::RFinger | EquipSlot::LFinger => "Finger",
+                    EquipSlot::Wrists => "Wrists",
+                };
+
+                single_name(ItemKind::Gear, format!("{info} Smallclothes {slot}"))
+            }
+
             Ok(
                 GamePath::Equipment(EquipmentPath::Mdl {
                     id: primary_id,

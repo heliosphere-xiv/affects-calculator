@@ -94,3 +94,21 @@ impl EquipSlot {
         }
     }
 }
+
+impl std::fmt::Display for EquipSlot {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            Self::Head => "Helmet",
+            Self::Hands => "Gloves",
+            Self::Legs => "Pants",
+            Self::Feet => "Shoes",
+            Self::Body => "Chestpiece",
+            Self::Ears => "Earrings",
+            Self::Neck => "Necklace",
+            Self::RFinger | Self::LFinger => "Ring",
+            Self::Wrists => "Bracelet",
+        };
+
+        write!(f, "{s}")
+    }
+}
