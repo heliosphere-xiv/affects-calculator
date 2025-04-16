@@ -20,6 +20,8 @@ pub fn analyse_actions(ctx: &mut GeneratorContext) {
         .unwrap();
 
     for action in actions {
+        let action = action.unwrap();
+
         let name = match action.name.format() {
             Ok(name) if !name.is_empty() => name,
             _ => continue,

@@ -20,10 +20,13 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
         .sheet(MetadataProvider::<EquipSlotCategory>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|esc| (esc.row_id, esc))
-        .collect::<BTreeMap<_, _>>();
+        .map(|esc| esc.map(|esc| (esc.row_id, esc)))
+        .collect::<Result<BTreeMap<_, _>, _>>()
+        .unwrap();
 
     for item in items {
+        let item = item.unwrap();
+
         let name = match item.name.format() {
             Ok(name) if !name.is_empty() => name,
             _ => continue,

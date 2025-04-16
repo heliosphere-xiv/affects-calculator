@@ -17,6 +17,8 @@ pub fn analyse_ornaments(ctx: &mut GeneratorContext) {
         .unwrap();
 
     for ornament in ornaments {
+        let ornament = ornament.unwrap();
+
         let model_chara = match model_charas.row(ornament.model as u32) {
             Ok(mc) if !mc.kind.is_other() => mc,
             _ => continue,

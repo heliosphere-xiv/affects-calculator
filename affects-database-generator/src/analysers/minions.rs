@@ -17,6 +17,8 @@ pub fn analyse_minions(ctx: &mut GeneratorContext) {
         .unwrap();
 
     for minion in minions {
+        let minion = minion.unwrap();
+
         let model_chara = match model_charas.row(minion.model as u32) {
             Ok(mc) if !mc.kind.is_other() => mc,
             _ => continue,

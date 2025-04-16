@@ -22,31 +22,37 @@ pub fn analyse_bnpcs(ctx: &mut GeneratorContext) {
         .sheet(MetadataProvider::<BNpcName>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|name| (name.row_id, name))
-        .collect::<BTreeMap<_, _>>();
+        .map(|name| name.map(|name| (name.row_id, name)))
+        .collect::<Result<BTreeMap<_, _>, _>>()
+        .unwrap();
     let model_charas = ctx
         .excel
         .sheet(MetadataProvider::<ModelChara>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|mc| (mc.row_id, mc))
-        .collect::<BTreeMap<_, _>>();
+        .map(|mc| mc.map(|mc| (mc.row_id, mc)))
+        .collect::<Result<BTreeMap<_, _>, _>>()
+        .unwrap();
     let npc_equips = ctx
         .excel
         .sheet(MetadataProvider::<NpcEquip>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|equip| (equip.row_id, equip))
-        .collect::<BTreeMap<_, _>>();
+        .map(|equip| equip.map(|equip| (equip.row_id, equip)))
+        .collect::<Result<BTreeMap<_, _>, _>>()
+        .unwrap();
     let minions = ctx
         .excel
         .sheet(MetadataProvider::<Companion>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|minion| minion.model)
-        .collect::<BTreeSet<_>>();
+        .map(|minion| minion.map(|minion| minion.model))
+        .collect::<Result<BTreeSet<_>, _>>()
+        .unwrap();
 
     for bnpc in bnpc_bases {
+        let bnpc = bnpc.unwrap();
+
         if minions.contains(&bnpc.model_chara) {
             // we don't need the battle npc minions
             continue;

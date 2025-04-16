@@ -17,6 +17,8 @@ pub fn analyse_mounts(ctx: &mut GeneratorContext) {
         .unwrap();
 
     for mount in mounts {
+        let mount = mount.unwrap();
+
         let model_chara = match model_charas.row(mount.model_chara as u32) {
             Ok(mc) if !mc.kind.is_other() => mc,
             _ => continue,

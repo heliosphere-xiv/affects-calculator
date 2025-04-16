@@ -16,6 +16,8 @@ pub fn analyse_maps(ctx: &mut GeneratorContext) {
         .unwrap();
 
     for map in maps {
+        let map = map.unwrap();
+
         let id = match map.id.format() {
             Ok(id) if !id.is_empty() => id,
             _ => continue,

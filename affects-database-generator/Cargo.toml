@@ -9,7 +9,7 @@ affects-common = { path = "../affects-common" }
 anyhow = "1"
 binrw = "0.14"
 clap = { version = "4", features = ["derive"] }
-ironworks = { git = "https://github.com/ackwell/ironworks", rev = "8bc9b81099041da79f4a0e98ab6ba9fe11432371", features = ["excel", "sestring", "sqpack"] }
+ironworks = { git = "https://github.com/ackwell/ironworks", rev = "0885526ee45392761d58787df839262bff63b7a6", features = ["excel", "sestring", "sqpack"] }
 path-parser = { path = "../path-parser" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

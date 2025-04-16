@@ -20,6 +20,8 @@ pub fn analyse_emotes(ctx: &mut GeneratorContext) {
         .unwrap();
 
     for emote in emotes {
+        let emote = emote.unwrap();
+
         let name = emote.name.format().unwrap();
         if name.is_empty() {
             continue;

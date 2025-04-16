@@ -20,17 +20,21 @@ pub fn analyse_enpcs(ctx: &mut GeneratorContext) {
         .sheet(MetadataProvider::<ENpcResident>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|res| (res.row_id, res))
-        .collect::<BTreeMap<_, _>>();
+        .map(|res| res.map(|res| (res.row_id, res)))
+        .collect::<Result<BTreeMap<_, _>, _>>()
+        .unwrap();
     let model_charas = ctx
         .excel
         .sheet(MetadataProvider::<ModelChara>::for_sheet())
         .unwrap()
         .into_iter()
-        .map(|mc| (mc.row_id, mc))
-        .collect::<BTreeMap<_, _>>();
+        .map(|mc| mc.map(|mc| (mc.row_id, mc)))
+        .collect::<Result<BTreeMap<_, _>, _>>()
+        .unwrap();
 
     for enpc in enpc_bases {
+        let enpc = enpc.unwrap();
+
         let model_chara = match model_charas.get(&(enpc.model_chara as u32)) {
             Some(mc) if !mc.kind.is_other() => mc,
             _ => continue,
