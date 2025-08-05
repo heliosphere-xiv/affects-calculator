@@ -73,7 +73,7 @@ macro_rules! populate {
                     .field($field)
                     .context("could not get field")?
                     .$converter()
-                    .map_err(|_| ::anyhow::format_err!("field was wrong type"))?,
+                    .map_err(|_| ::anyhow::format_err!("field {} was wrong type", stringify!($field_name)))?,
             )*
             $(
                 $field_name_2: $value,
