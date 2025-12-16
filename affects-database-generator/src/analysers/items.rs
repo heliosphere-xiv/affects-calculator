@@ -80,6 +80,8 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                     .or_default()
                     .insert((ItemKind::Gear, name_idx));
 
+                ctx.affects.item_ids.entry(item.row_id).or_insert(name_idx);
+
                 let other_ring = match slot {
                     EquipSlot::LFinger => Some(EquipSlot::RFinger),
                     EquipSlot::RFinger => Some(EquipSlot::LFinger),
@@ -96,6 +98,8 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                         .entry(variant_id)
                         .or_default()
                         .insert((ItemKind::Gear, name_idx));
+
+                    ctx.affects.item_ids.entry(item.row_id).or_insert(name_idx);
                 }
             }
             Err(()) => {

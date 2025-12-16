@@ -29,6 +29,9 @@ pub struct Affects {
     pub maps: BTreeMap<String, NameSet>,
 
     pub vfx: VfxMaps,
+
+    /// item id => name index
+    pub item_ids: BTreeMap<u32, u16>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
