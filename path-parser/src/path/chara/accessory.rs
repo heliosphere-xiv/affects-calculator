@@ -42,7 +42,7 @@ fn file_repeat(input: &str) -> IResult<&str, (ModelInfo, u16)> {
 
 // chara/accessory
 
-pub(crate) fn chara_accessory_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_accessory_path(input: &str) -> IResult<&str, GamePath<'_>> {
     let (left, primary_id) = delimited(tag("accessory/"), path_id("a"), tag("/")).parse(input)?;
 
     map(

@@ -39,7 +39,7 @@ where
     }
 }
 
-pub fn file_or_part<T: FromStr>(input: &str) -> IResult<&str, FileOrPart<T>> {
+pub fn file_or_part<T: FromStr>(input: &str) -> IResult<&str, FileOrPart<'_, T>> {
     map_res((raw_part, opt(eof)), |(part, eof)| {
         if eof.is_some() {
             return Ok(FileOrPart::File(part));

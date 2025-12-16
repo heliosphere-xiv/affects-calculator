@@ -184,11 +184,11 @@ fn body_type_slot(input: &str) -> IResult<&str, BodyTypeSlot> {
 
 // chara/human
 
-pub(crate) fn chara_character_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_character_path(input: &str) -> IResult<&str, GamePath<'_>> {
     alt((chara_character_path_simple, chara_path_complex)).parse(input)
 }
 
-fn chara_character_path_simple(input: &str) -> IResult<&str, GamePath> {
+fn chara_character_path_simple(input: &str) -> IResult<&str, GamePath<'_>> {
     let (left, (model_info, body_type)) = (
         delimited(
             tag("human/"),
@@ -212,7 +212,7 @@ fn chara_character_path_simple(input: &str) -> IResult<&str, GamePath> {
     .parse(left)
 }
 
-fn chara_path_complex(input: &str) -> IResult<&str, GamePath> {
+fn chara_path_complex(input: &str) -> IResult<&str, GamePath<'_>> {
     map(
         alt((
             catchlight_path,
@@ -235,7 +235,7 @@ fn mdl_path(
     primary_id: u16,
     model_info: (u16, ModelInfo),
     body_type: BodyType,
-) -> impl Fn(&str) -> IResult<&str, CharacterPath> {
+) -> impl Fn(&str) -> IResult<&str, CharacterPath<'_>> {
     move |input: &str| {
         map(
             delimited(
@@ -263,7 +263,7 @@ fn mtrl_path(
     primary_id: u16,
     model_info: (u16, ModelInfo),
     body_type: BodyType,
-) -> impl Fn(&str) -> IResult<&str, CharacterPath> {
+) -> impl Fn(&str) -> IResult<&str, CharacterPath<'_>> {
     move |input: &str| {
         map(
             (
@@ -292,7 +292,7 @@ fn tex_path(
     primary_id: u16,
     model_info: (u16, ModelInfo),
     body_type: BodyType,
-) -> impl Fn(&str) -> IResult<&str, CharacterPath> {
+) -> impl Fn(&str) -> IResult<&str, CharacterPath<'_>> {
     move |input: &str| {
         map(
             (
@@ -320,7 +320,7 @@ fn tex_path(
 
 // chara/common/texture/catchlight
 
-fn catchlight_path(input: &str) -> IResult<&str, CharacterPath> {
+fn catchlight_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         delimited(
             tag("common/texture/catchlight"),
@@ -334,7 +334,7 @@ fn catchlight_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/common/texture/eye
 
-fn eye_path(input: &str) -> IResult<&str, CharacterPath> {
+fn eye_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         (
             delimited(tag("common/texture/eye/eye"), n_digit_id::<u8>(2), tag("_")),
@@ -347,7 +347,7 @@ fn eye_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/common/texture/skin
 
-fn skin_path(input: &str) -> IResult<&str, CharacterPath> {
+fn skin_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         delimited(tag("common/texture/skin"), take_until(".tex"), tag(".tex")),
         CharacterPath::Skin,
@@ -357,7 +357,7 @@ fn skin_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/common/texture/decal
 
-fn decal_path(input: &str) -> IResult<&str, CharacterPath> {
+fn decal_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         (
             delimited(
@@ -378,7 +378,7 @@ fn decal_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/human/.../skeleton
 
-fn skeleton_path(input: &str) -> IResult<&str, CharacterPath> {
+fn skeleton_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     let (left, (model_info, slot)) = (
         delimited(tag("human/c"), model_info_with_raw, tag("/")),
         delimited(tag("skeleton/"), skeleton_slot, tag("/")),
@@ -413,7 +413,7 @@ fn skeleton_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/action/....tmb
 
-fn tmb_path(input: &str) -> IResult<&str, CharacterPath> {
+fn tmb_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         delimited(tag("action/"), take_until(".tmb"), tag(".tmb")),
         CharacterPath::Tmb,
@@ -423,7 +423,7 @@ fn tmb_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/human/.../animation
 
-fn pap_path(input: &str) -> IResult<&str, CharacterPath> {
+fn pap_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         (
             delimited(tag("human/"), preceded(tag("c"), model_info), tag("/")),
@@ -449,7 +449,7 @@ fn pap_path(input: &str) -> IResult<&str, CharacterPath> {
 
 // chara/xls/attachOffset
 
-fn atch_path(input: &str) -> IResult<&str, CharacterPath> {
+fn atch_path(input: &str) -> IResult<&str, CharacterPath<'_>> {
     map(
         delimited(tag("xls/attachOffset/c"), model_info, tag(".atch")),
         CharacterPath::Atch,

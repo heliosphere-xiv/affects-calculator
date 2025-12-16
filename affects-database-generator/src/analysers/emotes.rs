@@ -43,7 +43,7 @@ pub fn analyse_emotes(ctx: &mut GeneratorContext) {
             .and_then(|&id| action_timelines.row(id as u32).ok())
             .and_then(|tl| tl.key.format().ok());
 
-        let key = match key.and_then(|key| key.split('/').last().map(ToString::to_string)) {
+        let key = match key.and_then(|key| key.split('/').next_back().map(ToString::to_string)) {
             Some(key) => key,
             None => continue,
         };

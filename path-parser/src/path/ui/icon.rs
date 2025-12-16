@@ -8,7 +8,7 @@ use nom::{
 
 use crate::{GamePath, IResult, Language, simple_part_enum};
 
-pub(crate) fn ui_icon_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn ui_icon_path(input: &str) -> IResult<&str, GamePath<'_>> {
     map(
         (
             delimited(tag("icon/"), u64, tag("/")),

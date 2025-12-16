@@ -52,18 +52,18 @@ pub fn analyse_maps(ctx: &mut GeneratorContext) {
             name.push_str(pn);
         }
 
-        if let Some(sub) = &place_name_sub {
-            if place_name_sub != place_name {
-                let empty = name.is_empty();
-                if !empty {
-                    name.push_str(" (");
-                }
+        if let Some(sub) = &place_name_sub
+            && place_name_sub != place_name
+        {
+            let empty = name.is_empty();
+            if !empty {
+                name.push_str(" (");
+            }
 
-                name.push_str(sub);
+            name.push_str(sub);
 
-                if !empty {
-                    name.push(')');
-                }
+            if !empty {
+                name.push(')');
             }
         }
 

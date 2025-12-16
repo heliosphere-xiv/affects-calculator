@@ -46,7 +46,7 @@ fn file_repeat(input: &str) -> IResult<&str, (ModelInfo, u16)> {
 
 // chara/equipment
 
-pub(crate) fn chara_equipment_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_equipment_path(input: &str) -> IResult<&str, GamePath<'_>> {
     // equipment/e0863/material/v0006/mt_c0101e0863_sho_a.mtrl
     let (left, primary_id) = delimited(tag("equipment/"), path_id("e"), tag("/")).parse(input)?;
 

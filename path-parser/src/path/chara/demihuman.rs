@@ -52,11 +52,11 @@ fn file_repeat(input: &str) -> IResult<&str, (u16, u16)> {
 
 // chara/demihuman
 
-pub(crate) fn chara_demihuman_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_demihuman_path(input: &str) -> IResult<&str, GamePath<'_>> {
     alt((chara_demihuman_path_simple, chara_demihuman_path_skeleton)).parse(input)
 }
 
-fn chara_demihuman_path_simple(input: &str) -> IResult<&str, GamePath> {
+fn chara_demihuman_path_simple(input: &str) -> IResult<&str, GamePath<'_>> {
     let (left, (primary_id, secondary_id)) = (
         delimited(tag("demihuman/"), path_id("d"), tag("/")),
         delimited(tag("obj/equipment/"), path_id("e"), tag("/")),
@@ -175,7 +175,7 @@ fn tex_path(primary_id: u16, secondary_id: u16) -> impl Fn(&str) -> IResult<&str
 
 // chara/demihuman/.../skeleton
 
-fn chara_demihuman_path_skeleton(input: &str) -> IResult<&str, GamePath> {
+fn chara_demihuman_path_skeleton(input: &str) -> IResult<&str, GamePath<'_>> {
     map_res(
         (
             delimited(tag("demihuman/"), path_id("d"), tag("/")),

@@ -14,7 +14,7 @@ use path_parser::{
 };
 
 pub trait CalculatesAffects {
-    fn calculate_affected(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<Cow<str>>>;
+    fn calculate_affected(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<Cow<'_, str>>>;
 
     fn calculate_affected_cloned(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<String>> {
         self.calculate_affected(path)
@@ -33,7 +33,7 @@ pub trait CalculatesAffects {
 }
 
 impl CalculatesAffects for Affects {
-    fn calculate_affected(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<Cow<str>>> {
+    fn calculate_affected(&self, path: &str) -> BTreeMap<ItemKind, BTreeSet<Cow<'_, str>>> {
         let convert_names = |names: &BTreeSet<(ItemKind, u16)>| {
             names
                 .iter()
@@ -776,7 +776,7 @@ impl CalculatesAffects for Affects {
                     _ => {
                         let mut iter = path.split('/');
                         let first = iter.next();
-                        let last = iter.last();
+                        let last = iter.next_back();
                         match (first, last) {
                             (_, Some(x)) if x.ends_with(".scd") => {
                                 (ItemKind::Miscellaneous, "Sound")
@@ -815,7 +815,7 @@ fn single_name<'a>(
     Some(set)
 }
 
-fn single_name_ref(kind: ItemKind, name: &str) -> Option<BTreeSet<(ItemKind, Cow<str>)>> {
+fn single_name_ref(kind: ItemKind, name: &str) -> Option<BTreeSet<(ItemKind, Cow<'_, str>)>> {
     let mut set = BTreeSet::new();
     set.insert((kind, Cow::from(name)));
     Some(set)
@@ -827,7 +827,7 @@ fn check_basic_animations<'affects>(
 ) -> BTreeSet<(ItemKind, Cow<'affects, str>)> {
     let mut names = anim_key
         .split('/')
-        .last()
+        .next_back()
         .and_then(|key| affects.emotes.get(key))
         .map(|names| {
             names

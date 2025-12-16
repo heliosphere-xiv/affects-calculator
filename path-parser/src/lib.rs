@@ -123,6 +123,6 @@ fn equip_slot(input: &str) -> IResult<&str, EquipSlot> {
 
 // main parser
 
-pub fn game_path(input: &str) -> IResult<&str, GamePath> {
+pub fn game_path(input: &str) -> IResult<&str, GamePath<'_>> {
     alt((path::common_path, path::chara_path, path::ui_path)).parse(input)
 }

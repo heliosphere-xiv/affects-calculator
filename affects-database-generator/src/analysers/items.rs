@@ -62,11 +62,11 @@ pub fn analyse_items(ctx: &mut GeneratorContext) {
                     .file::<RawImcFile>(&imc_path)
                     .ok()
                     .and_then(ImcFile::try_from_raw);
-                if let Some(imc) = imc {
-                    if let Some(part_idx) = slot.to_imc_part_idx() {
-                        let imc_variant = &imc.parts[part_idx].variants[variant_id as usize - 1];
-                        variant_id = imc_variant.material_id;
-                    }
+                if let Some(imc) = imc
+                    && let Some(part_idx) = slot.to_imc_part_idx()
+                {
+                    let imc_variant = &imc.parts[part_idx].variants[variant_id as usize - 1];
+                    variant_id = imc_variant.material_id;
                 }
 
                 let name_idx = ctx.get_name_idx(ItemKind::Gear, &name);

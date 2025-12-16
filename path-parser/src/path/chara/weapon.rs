@@ -47,11 +47,11 @@ fn file_repeat(input: &str) -> IResult<&str, (u16, u16)> {
 
 // chara/weapon
 
-pub(crate) fn chara_weapon_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_weapon_path(input: &str) -> IResult<&str, GamePath<'_>> {
     alt((chara_weapon_path_simple, chara_weapon_path_skeleton)).parse(input)
 }
 
-fn chara_weapon_path_simple(input: &str) -> IResult<&str, GamePath> {
+fn chara_weapon_path_simple(input: &str) -> IResult<&str, GamePath<'_>> {
     let (left, (primary_id, secondary_id)) = (
         delimited(tag("weapon/"), path_id("w"), tag("/")),
         delimited(tag("obj/body/"), path_id("b"), tag("/")),
@@ -164,7 +164,7 @@ fn tex_path(primary_id: u16, secondary_id: u16) -> impl Fn(&str) -> IResult<&str
 
 // chara/weapon/.../skeleton
 
-fn chara_weapon_path_skeleton(input: &str) -> IResult<&str, GamePath> {
+fn chara_weapon_path_skeleton(input: &str) -> IResult<&str, GamePath<'_>> {
     map_res(
         (
             delimited(tag("weapon/"), path_id("w"), tag("/")),

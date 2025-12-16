@@ -10,18 +10,18 @@ use crate::{GamePath, IResult};
 
 // common/font
 
-pub(crate) fn common_font_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn common_font_path(input: &str) -> IResult<&str, GamePath<'_>> {
     preceded(tag("font/"), alt((common_font_tex, common_font_fdt))).parse(input)
 }
 
-fn common_font_tex(input: &str) -> IResult<&str, GamePath> {
+fn common_font_tex(input: &str) -> IResult<&str, GamePath<'_>> {
     map(terminated(take_till(|c| c == '.'), tag(".tex")), |part| {
         GamePath::FontTexture(part)
     })
     .parse(input)
 }
 
-fn common_font_fdt(input: &str) -> IResult<&str, GamePath> {
+fn common_font_fdt(input: &str) -> IResult<&str, GamePath<'_>> {
     map(
         terminated(common_font_fdt_name, tag(".fdt")),
         |(name, size)| GamePath::FontFile { family: name, size },

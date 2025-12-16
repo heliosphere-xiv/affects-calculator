@@ -10,7 +10,7 @@ use crate::{GamePath, IResult, n_digit_id};
 
 const ALPHA: &str = "abcdefghijklmnopqrstuvwxyz";
 
-pub(crate) fn ui_map_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn ui_map_path(input: &str) -> IResult<&str, GamePath<'_>> {
     let (left, (primary_id, variant)) = (
         delimited(tag("map/"), take(4_usize), tag("/")),
         terminated(n_digit_id::<u8>(2), tag("/")),

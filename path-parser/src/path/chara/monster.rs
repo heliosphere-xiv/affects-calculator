@@ -47,11 +47,11 @@ fn file_repeat(input: &str) -> IResult<&str, (u16, u16)> {
 
 // chara/monster
 
-pub(crate) fn chara_monster_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_monster_path(input: &str) -> IResult<&str, GamePath<'_>> {
     alt((chara_monster_path_normal, chara_monster_path_skeleton)).parse(input)
 }
 
-fn chara_monster_path_normal(input: &str) -> IResult<&str, GamePath> {
+fn chara_monster_path_normal(input: &str) -> IResult<&str, GamePath<'_>> {
     let (left, (primary_id, secondary_id)) = (
         delimited(tag("monster/"), path_id("m"), tag("/")),
         delimited(tag("obj/body/"), path_id("b"), tag("/")),
@@ -161,7 +161,7 @@ fn tex_path(primary_id: u16, secondary_id: u16) -> impl Fn(&str) -> IResult<&str
 
 // chara/monster/.../skeleton
 
-fn chara_monster_path_skeleton(input: &str) -> IResult<&str, GamePath> {
+fn chara_monster_path_skeleton(input: &str) -> IResult<&str, GamePath<'_>> {
     map_res(
         (
             delimited(tag("monster/"), path_id("m"), tag("/")),

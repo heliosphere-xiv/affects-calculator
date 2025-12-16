@@ -24,7 +24,7 @@ mod equipment;
 mod monster;
 mod weapon;
 
-pub(crate) fn chara_path(input: &str) -> IResult<&str, GamePath> {
+pub(crate) fn chara_path(input: &str) -> IResult<&str, GamePath<'_>> {
     preceded(
         tag("chara/"),
         alt((
